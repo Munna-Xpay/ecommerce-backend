@@ -45,6 +45,7 @@ export const getOneProduct = async (req, res) => {
 
 //update product
 export const updateProduct = async (req, res) => {
+    //add validations
     try {
         const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json(product);
