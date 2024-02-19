@@ -6,7 +6,19 @@ const router = express.Router();
 router.post('/add/seller', addSeller);
 
 //get seller route
+
+/*
+do not use params like this 
 router.get('/get/seller', getAllSeller);
+avoid unwanted parameters
+
+user like 
+router.get('/get-seller', getAllSeller);
+router.get('/get-seller/:id', getAllSeller);
+router.put('/update-seller/:id', getAllSeller);
+router.delete('/delete-seller/:id', getAllSeller);
+*/
+router.get('/get/seller', getAllSeller); 
 
 //get one seller route
 router.get('/get/one/seller/:id', getOneSeller);
