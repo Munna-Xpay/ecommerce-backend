@@ -2,6 +2,7 @@ import Seller from '../../models/sellerModel.js';
 
 //add seller
 export const addSeller = async (req, res) => {
+    // add validations before saving
     try {
         const newSeller = new Seller(req.body);
         await newSeller.save();
