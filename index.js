@@ -1,29 +1,19 @@
-const express = require('express');
-require('dotenv').config()
-const mongoose = require('mongoose');
-const cors = require('cors');
-const authRoute = require('./routes/auth')
-const cartRoute = require('./routes/cart')
-const categoryRoute = require('./routes/category')
-const ordersRoute = require('./routes/orders')
-const productsRoute = require('./routes/products')
-const usersRoute = require('./routes/users')
-const wishlistRoute = require('./routes/wishlist')
+import express from 'express';
+import "dotenv/config.js";
+import mongoose from 'mongoose';
+import cors from 'cors'
+import productsRouter from './routes/products.js';
+import usersRouter from './routes/users.js'
+import adminRouter from './routes/admin.js'
 
-const app = express();
+const app = express()
+
 app.use(express.json())
 app.use(cors())
-app.use('/api/auth', authRoute)
-app.use('/api/cart', cartRoute)
-app.use('/api/category', categoryRoute)
-app.use('/api/order', ordersRoute)
-app.use('/api/product', productsRoute)
-app.use('/api/user', usersRoute)
-app.use('/api/wishlist', wishlistRoute)
+app.use('/api/admin', adminRouter)
+app.use('/api/product', productsRouter)
+app.use('/api/auth', usersRouter)
 
-app.get('/', (req, res) => {
-    res.send("working")
-})
 
 const port = process.env.PORT || 4000;
 
