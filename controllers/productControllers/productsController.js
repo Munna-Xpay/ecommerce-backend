@@ -1,7 +1,7 @@
-const Product = require('../models/productsModel');
+import Product from '../../models/productsModel.js';
 
 //add product
-exports.addProduct = async (req, res) => {
+export const addProduct = async (req, res) => {
     try {
         const newProduct = new Product(req.body);
         await newProduct.save();
@@ -12,9 +12,29 @@ exports.addProduct = async (req, res) => {
 }
 
 //get all product or by query
-exports.getAllProducts = async (req, res) => {
+export const getAllProducts = async (req, res) => {
+    const category = req.query.category;
+    const brand = req.query.brand;
+    const minPrice = req.query.min;
+    const maxPrice = req.query.max;
+    const shipping = req.query.shipping;
+    const rating = req.query.rate;
+    const inStock = req.query.inStock;
     try {
-        const products = await Product.find();
+        let products;
+        if (category) {
+            products = await Product.find({ category });
+        } else if (brand) {
+            products = await Product.find({ manufacturer: brand });
+        } else if (minPrice && maxPrice) {
+            products = await Product.where("price").gte(minPrice).lte(maxPrice);
+        } else if (minPrice && maxPrice) {
+            products = await Product.find({ shipping });
+        } else if (inStock) {
+            products = await Product.find({ inStock });
+        } else {
+            products = await Product.find();
+        }
         res.status(200).json(products);
     } catch (err) {
         res.status(500).json(err)
@@ -22,7 +42,7 @@ exports.getAllProducts = async (req, res) => {
 }
 
 //get one product
-exports.getOneProduct = async (req, res) => {
+export const getOneProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         res.status(200).json(product);
@@ -32,7 +52,7 @@ exports.getOneProduct = async (req, res) => {
 }
 
 //update product
-exports.updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
     try {
         const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json(product);
@@ -42,7 +62,7 @@ exports.updateProduct = async (req, res) => {
 }
 
 //delete product
-exports.deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
     try {
         const deletedProduct = await Product.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: 'product deleted successfully' });

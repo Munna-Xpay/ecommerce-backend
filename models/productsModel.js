@@ -1,5 +1,5 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
     title: {
@@ -22,10 +22,6 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    review_stars: {
-        type: Number,
-        default: 0
-    },
     memory: {
         type: Array,
     },
@@ -42,8 +38,8 @@ const productSchema = new mongoose.Schema({
         default: []
     },
     category: {
-        type: String,
-        required: true
+        type: Array,
+        default: []
     },
     manufacturer: {
         type: String,
@@ -61,34 +57,17 @@ const productSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    reviews: {
-        type: [
-            {
-                username: {
-                    type: String,
-                    required: true
-                },
-                date: {
-                    type: Date,
-                    required: true
-                },
-                review: {
-                    type: String,
-                    required: true
-                },
-                review_stars: {
-                    type: Number,
-                    default: 0
-                },
-                userId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'users',
-                    required: true
-                }
-            }
-        ],
-        default: []
+    shipping: {
+        type: String,
+        default: "Free"
+    },
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "sellers",
+        required: true
     }
 })
 
-module.exports = mongoose.model("products", productSchema);
+const productModel = mongoose.model("products", productSchema);
+
+export default productModel
