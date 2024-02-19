@@ -16,7 +16,7 @@ router.post('/register',register)
 router.post('/login',login)
 
 //updateUserPRofile
-router.put('/update-profile/:_id',fileUploads.single('profileImage'),userProfileUpdate)
+router.put('/update-profile/:_id',jwtMiddleware,fileUploads.single('profileImage'),userProfileUpdate)
 
 
 export default router
