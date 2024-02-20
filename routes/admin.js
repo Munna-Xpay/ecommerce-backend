@@ -24,7 +24,7 @@ router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
 
 
 //add Category route
-router.post('/add-category', validateCategoryRequest, addCategory);
+router.post('/add-category', jwtMiddleware, validateCategoryRequest, addCategory);
 
 //get Category route
 router.get('/get-category', getAllCategory);
