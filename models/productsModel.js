@@ -66,7 +66,7 @@ const productSchema = new mongoose.Schema({
         ref: "sellers",
         required: true
     }
-})
+}, { timestamps: true })
 
 const productModel = mongoose.model("products", productSchema);
 
