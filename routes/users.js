@@ -3,6 +3,7 @@ import { login, register, userProfileUpdate } from '../controllers/usersControll
 import fileUploads from '../middlewares/multerMiddleware.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { addToCart, cartProducts, decrementCartQty, deleteCartProduct, incrementCartQty } from '../controllers/cartControllers/cartController.js';
+import { validateUserRequest } from '../controllers/usersController/validation/usersValidation.js';
 
 
 
@@ -11,13 +12,13 @@ const router = express.Router();
 
 
 //register
-router.post('/register',register)
+router.post('/register',validateUserRequest,register)
 
 //login
-router.post('/login',login)
+router.post('/login',validateUserRequest,login)
 
 //updateUserPRofile
-router.put('/update-profile/:_id',fileUploads.single('profileImage'),userProfileUpdate)
+router.put('/update-profile/:_id',jwtMiddleware,validateUserRequest,fileUploads.single('profileImage'),userProfileUpdate)
 
 //addtocart
 router.post('/add-to-cart',jwtMiddleware,addToCart)
