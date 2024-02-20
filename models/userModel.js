@@ -15,25 +15,25 @@ const userSchema=new mongoose.Schema({
         required:true
     },
     phoneNum:{
-        type:Number
+        type:String,
     },
     birthday:{
-        type:Date
+        type:Date,
     },
     gender:{
-        type:String
+        type:String,
     },
     address:{
-        type:String
+        type:String,
     },
     zipCode:{
-        type:Number
+        type:Number,
     },
     city:{
-        type:String
+        type:String,
     },
     country:{
-        type:String
+        type:String,
     },
     profileImage:{
         type:String
