@@ -6,7 +6,7 @@ export const addToCart=async(req,res)=>{
     //user id
     const userId=req.payload
 
-    const {id,quantity,subtotal}=req.body
+    const {id,quantity}=req.body
 
     try{
         const existingProduct=await Cart.findOne({product:id,userId})
@@ -14,7 +14,7 @@ export const addToCart=async(req,res)=>{
             res.status(400).json("Product already exists in cart!")
         }
         else{
-           const newProduct=new Cart({product:id,quantity,subtotal,userId}) 
+           const newProduct=new Cart({product:id,quantity,userId}) 
            await newProduct.save()
            const allCartItems=await Cart.find().populate('product')
            res.status(200).json(allCartItems)
