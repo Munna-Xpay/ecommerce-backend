@@ -15,25 +15,32 @@ const userSchema=new mongoose.Schema({
         required:true
     },
     phoneNum:{
-        type:Number
+        type:String,
+        required:true
     },
     birthday:{
-        type:Date
+        type:Date,
+        required:true
     },
     gender:{
-        type:String
+        type:String,
+        required:true
     },
     address:{
-        type:String
+        type:String,
+        required:true
     },
     zipCode:{
-        type:Number
+        type:Number,
+        required:true
     },
     city:{
-        type:String
+        type:String,
+        required:true
     },
     country:{
-        type:String
+        type:String,
+        required:true
     },
     profileImage:{
         type:String

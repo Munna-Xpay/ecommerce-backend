@@ -8,7 +8,6 @@ export const jwtMiddleware=(req,res,next)=>{
     //verification
     try{
         const JWTresponse=jwt.verify(token,'m17')
-
         req.payload=JWTresponse._id
         next()
     }
