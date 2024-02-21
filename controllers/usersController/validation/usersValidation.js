@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const userSchema=Joi.object({
-    fullName:Joi.string().required(),
+    fullName:Joi.string(),
     email:Joi.string().email().required(),
     password:Joi.string().min(6).required(),
     phoneNum:Joi.string().length(10).pattern(/^\d+$/),

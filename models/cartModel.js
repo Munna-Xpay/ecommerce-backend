@@ -7,7 +7,7 @@ const cartSchema=new mongoose.Schema({
     },
     product:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Product',
+        ref:'products',
         required:true
     },
     quantity:{
@@ -15,9 +15,9 @@ const cartSchema=new mongoose.Schema({
         default:1,
         required:true
     },
-    subtotal:{
-        type:Number,
-        required:true
+    original_price:{
+       type:Number,
+       required:true
     }
 
 },{timestamps:true})
