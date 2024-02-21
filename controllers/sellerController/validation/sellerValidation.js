@@ -10,7 +10,8 @@ const sellerSchema = Joi.object({
     zipCode: Joi.number(),
     city: Joi.string(),
     country: Joi.string(),
-    company_name: Joi.string().required()
+    company_name: Joi.string().required(),
+    company_icon: Joi.string()
 })
 
 export const validateSellerRequest = (req, res, next) => {

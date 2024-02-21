@@ -6,7 +6,7 @@ const reviewSchema = Joi.object({
     date: Joi.date().required(),
     review: Joi.string().required(),
     review_stars: Joi.number(),
-    userId: Joi.string().required(),
+    reviewFrom: Joi.string().required(),
     productId: Joi.string().required()
 })
 
