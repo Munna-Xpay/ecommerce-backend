@@ -7,6 +7,7 @@ import { validateUserRequest } from '../controllers/usersController/validation/u
 import { addToWishlist, deleteWishlistProduct, getWishlistProducts} from '../controllers/wishlistController/wishlistController.js';
 import { validateCartRequest } from '../controllers/cartControllers/validation/cartValidation.js';
 import { validateWishlistRequest } from '../controllers/wishlistController/validation/wishlistValidation.js';
+import { allOrders, orderDetails, userOrder } from '../controllers/ordersValidation/ordersController.js';
 
 
 const router = express.Router();
@@ -49,5 +50,14 @@ router.get('/wishlist-products',jwtMiddleware,getWishlistProducts)
 router.delete('/delete-wishlist-product/:_id',jwtMiddleware,deleteWishlistProduct)
 
 
+//order details
+router.post('/add-order-details',jwtMiddleware,orderDetails)
+
+//user orders
+router.get('/user-orders',jwtMiddleware,userOrder)
+
+
+//all orders
+router.get('all-orders',jwtMiddleware,allOrders)
 
 export default router
