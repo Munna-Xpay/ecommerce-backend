@@ -13,6 +13,7 @@ app.use(cors())
 app.use('/api/admin', adminRouter)
 app.use('/api/product', productsRouter)
 app.use('/api/auth', usersRouter)
+app.use("/uploadedFiles", express.static("./uploadedFiles"))
 
 
 const port = process.env.PORT || 4000;
