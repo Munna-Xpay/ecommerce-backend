@@ -61,7 +61,7 @@ export const userProfileUpdate = async (req, res) => {
   const {fullName,email,address,phoneNum,birthday,gender,zipCode,city,country,profileImage}=req.body
   const { _id } = req.params;
   
-  const data = req.body;
+
   const profileImg=req.file?req.file.filename:profileImage
 
   try {
