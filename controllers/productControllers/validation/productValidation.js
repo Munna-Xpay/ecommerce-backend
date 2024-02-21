@@ -9,8 +9,6 @@ const productSchema = Joi.object({
     original_price: Joi.number().required(),
     memory: Joi.array().items(Joi.string()),
     colors: Joi.array().items(Joi.string()).required(),
-    thumbnail: Joi.string().required(),
-    images: Joi.array().items(Joi.string()),
     category: Joi.array().items(Joi.string()),
     manufacturer: Joi.string().required(),
     warranty: Joi.string().required(),
@@ -18,13 +16,21 @@ const productSchema = Joi.object({
     description: Joi.array().items(Joi.string()),
     shipping: Joi.string(),
     seller: Joi.string().required(),
-    tax:Joi.number()
+    tax: Joi.number()
 })
+
+const fileUploadSchema = Joi.object({
+    thumbnail: Joi.array().required(),
+    images: Joi.array()
+})
+
 
 export const validateProductRequest = (req, res, next) => {
     productSchema.validateAsync(req.body)
         .then(value => {
-            next();
+            fileUploadSchema.validateAsync(req.files)
+                .then(val => next())
+                .catch(err => res.status(501).json({ err }))
         })
         .catch(error => {
             res.status(501).json({ error });

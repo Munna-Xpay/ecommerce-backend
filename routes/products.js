@@ -4,11 +4,12 @@ import { addReview, deleteReview, getAllReview, getOneReview, updateReview } fro
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateProductRequest } from '../controllers/productControllers/validation/productValidation.js';
 import { validateReviewRequest } from '../controllers/reviewController/validation/reviewsValidation.js';
+import fileUploads from '../middlewares/multerMiddleware.js';
 const router = express.Router();
 
 
 //add product route
-router.post('/add', jwtMiddleware, validateProductRequest, addProduct);
+router.post('/add', fileUploads.fields([{ name: "thumbnail", maxCount: 1 }, { name: "images", maxCount: 4 }]), addProduct);
 
 //get products route
 router.get('/get', getAllProducts);

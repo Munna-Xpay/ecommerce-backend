@@ -2,14 +2,19 @@ import Product from '../../models/productsModel.js';
 
 //add product
 export const addProduct = async (req, res) => {
-    //add validations here
+
+    const thumbnail = req.files.thumbnail[0].filename;
+    const images = req.files.images.map((img) => img.filename)
+    // console.log(thumbnail)
+    // console.log(images)
     try {
-        const newProduct = new Product(req.body);
+        const newProduct = new Product({ ...req.body, thumbnail, images });
         await newProduct.save();
         res.status(200).json(newProduct);
     } catch (err) {
         res.status(500).json(err)
     }
+    res.send("hey")
 }
 
 //get all products or by query
