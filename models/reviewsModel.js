@@ -18,7 +18,7 @@ const reviewSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    userId: {
+    reviewFrom: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users',
         required: true
@@ -27,7 +27,7 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-})
+}, { timestamps: true })
 
 const reviewModel = mongoose.model("reviews", reviewSchema);
 

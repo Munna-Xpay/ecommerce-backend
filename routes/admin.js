@@ -4,6 +4,8 @@ import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
 import { addCategory, deleteCategory, getAllCategory, getCategoryByType, updateCategory } from '../controllers/categoryController/categoryControllers.js';
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
+import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
+import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
 const router = express.Router();
 
 //add seller route
@@ -37,6 +39,23 @@ router.put('/update-category/:id', jwtMiddleware, updateCategory);
 
 //delete Category route
 router.delete('/delete-category/:id', jwtMiddleware, deleteCategory);
+
+
+
+//add Coupon route
+router.post('/add-coupon', jwtMiddleware, validateCouponRequest, addCoupon);
+
+//get Coupon route
+router.get('/get-coupon', jwtMiddleware, getAllCoupon);
+
+//get Coupon by amount route
+router.get('/get-available-coupon/:amount', jwtMiddleware, getAvaialableCoupons);
+
+//update Coupon route
+router.put('/update-coupon/:id', jwtMiddleware, updateCoupon);
+
+//delete Coupon route
+router.delete('/delete-coupon/:id', jwtMiddleware, deleteCoupon);
 
 
 export default router

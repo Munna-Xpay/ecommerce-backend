@@ -32,8 +32,12 @@ const sellerSchema = new mongoose.Schema({
     company_name: {
         type: String,
         required: true
+    },
+    company_icon: {
+        type: String,
+        default: ""
     }
-})
+}, { timestamps: true })
 
 const sellerModel = mongoose.model("sellers", sellerSchema)
 

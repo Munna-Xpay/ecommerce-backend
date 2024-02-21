@@ -31,7 +31,7 @@ router.post('/add-review', jwtMiddleware, validateReviewRequest, addReview);
 router.get('/get-review', getAllReview);
 
 //get one review route
-router.get('/get-one-review/:id', jwtMiddleware, getOneReview);
+router.get('/get-one-review/:productId', jwtMiddleware, getOneReview);
 
 //update review route
 router.put('/update-review/:id', jwtMiddleware, updateReview);

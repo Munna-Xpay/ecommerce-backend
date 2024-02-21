@@ -65,8 +65,16 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "sellers",
         required: true
+    },
+    tax: {
+        type: Number,
+        default: 0
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
-})
+}, { timestamps: true })
 
 const productModel = mongoose.model("products", productSchema);
 
