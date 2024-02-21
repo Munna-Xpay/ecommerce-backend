@@ -6,10 +6,10 @@ export const jwtMiddleware = (req, res, next) => {
         //access token
         const token = req.headers['user_token'].split(" ")[1]
         console.log(token)
+
         //verification
         try {
             const JWTresponse = jwt.verify(token, 'm17')
-
             req.payload = JWTresponse._id
             next()
         }

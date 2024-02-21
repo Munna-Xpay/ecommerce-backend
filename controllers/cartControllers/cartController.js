@@ -6,7 +6,7 @@ export const addToCart=async(req,res)=>{
     //user id
     const userId=req.payload
 
-    const {id,quantity,subtotal}=req.body
+    const {id,original_price}=req.body
 
     try{
         const existingProduct=await Cart.findOne({product:id,userId})
@@ -14,14 +14,14 @@ export const addToCart=async(req,res)=>{
             res.status(400).json("Product already exists in cart!")
         }
         else{
-           const newProduct=new Cart({product:id,quantity,subtotal,userId}) 
+           const newProduct=new Cart({product:id,userId,original_price}) 
            await newProduct.save()
-           const allCartItems=await Cart.find().populate('product')
-           res.status(200).json(allCartItems)
+           const allCartProducts=await Cart.find({userId}).populate('product')
+           res.status(200).json(allCartProducts)
         }
     }
     catch(err){
-        res.status(401).json(err)
+        res.status(401).json({error:err,message:'Add To Cart Failed'})
     }
 }
 
@@ -29,59 +29,40 @@ export const addToCart=async(req,res)=>{
 export const cartProducts=async(req,res)=>{
     const userId=req.payload
     try{
-        const products=await Cart.find({userId})
+        const products=await Cart.find({userId}).populate('product')
         if(products){
             res.status(200).json(products)
         }
     }
     catch(err){
-        res.status(401).json(err)
+        res.status(401).json({error:err,message:'Cart product access failed'})
     }
 }
 
 //quantity increment
 export const incrementCartQty=async(req,res)=>{
     const {_id}=req.params
+    const {original_price}=req.body
     try{
-        const existingProduct=await Cart.findOne({_id})
-        if(existingProduct){
-            existingProduct.quantity+=1
-            existingProduct.subtotal=existingProduct.quantity*existingProduct.subtotal
-            await existingProduct.save()
-            res.status(200).json("Quantity incremented")
-        }
-        else{
-            res.status(404).json("Product not found")
-        }
+        await Cart.findByIdAndUpdate(_id,{$inc:{quantity:+1,original_price}})
+        res.status(200).json('Quantity incremented')
+
     }
     catch (err) {
-        res.status(401).json(err)
+        res.status(401).json({error:err,message:'Quantity increment failed'})
     }
 }
 
-//quantity decrement
+// //quantity decrement
 export const decrementCartQty=async(req,res)=>{
     const {_id}=req.params
+    const {original_price}=req.body
     try{
-        const existingProduct=await Cart.findOne({_id})
-        if(existingProduct){
-            existingProduct.quantity-=1
-            if(existingProduct.quantity==0){
-                await Cart.deleteOne({_id})
-                res.status(200).json("Product removed")
-            }
-            else{
-                existingProduct.subtotal=existingProduct.quantity*existingProduct.subtotal
-                await existingProduct.save()
-                res.status(200).json("Quantity decremented")
-            }
-        }
-        else{
-            res.status(404).json("Product not found")
-        }
+       await Cart.findByIdAndUpdate(_id,{$inc:{quantity:-1,original_price:-original_price}})
+       res.status(200).json('Decremented')
     }
     catch (err) {
-        res.status(401).json(err)
+        res.status(401).json({eror:err,message:'Quantity decrement failed'})
     }
 }
 
