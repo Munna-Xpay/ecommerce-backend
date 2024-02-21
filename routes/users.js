@@ -4,11 +4,12 @@ import fileUploads from '../middlewares/multerMiddleware.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { addToCart, cartProducts, decrementCartQty, deleteCartProduct, incrementCartQty } from '../controllers/cartControllers/cartController.js';
 import { validateUserRequest } from '../controllers/usersController/validation/usersValidation.js';
-
+import { addToWishlist, deleteWishlistProduct, getWishlistProducts} from '../controllers/wishlistController/wishlistController.js';
+import { validateCartRequest } from '../controllers/cartControllers/validation/cartValidation.js';
+import { validateWishlistRequest } from '../controllers/wishlistController/validation/wishlistValidation.js';
 
 
 const router = express.Router();
-
 
 
 //register
@@ -18,21 +19,35 @@ router.post('/register',validateUserRequest,register)
 router.post('/login',validateUserRequest,login)
 
 //updateUserPRofile
-router.put('/update-profile/:_id',jwtMiddleware,validateUserRequest,fileUploads.single('profileImage'),userProfileUpdate)
+router.put('/update-profile/:_id',jwtMiddleware,fileUploads.single('profileImage'),userProfileUpdate)
+
+
 
 //addtocart
-router.post('/add-to-cart',jwtMiddleware,addToCart)
+router.post('/add-to-cart',jwtMiddleware,validateCartRequest,addToCart)
 
 //get cart products
 router.get('/cart-products',jwtMiddleware,cartProducts)
 
 //cart qty increment
-router.get('/cart-increment/:_id',jwtMiddleware,incrementCartQty)
+router.put('/cart-increment/:_id',jwtMiddleware,incrementCartQty)
 
 //cart qty decrement
-router.get('/cart-decrement/:_id',jwtMiddleware,decrementCartQty)
+router.put('/cart-decrement/:_id',jwtMiddleware,decrementCartQty)
 
 //delete cart product
-router.delete('/delete-cart-product/_id',jwtMiddleware,deleteCartProduct)
+router.delete('/delete-cart-product/:_id',jwtMiddleware,deleteCartProduct)
+
+
+//add to wishlist
+router.post('/add-to-wishlist',jwtMiddleware,validateWishlistRequest,addToWishlist)
+
+//get wishlist products
+router.get('/wishlist-products',jwtMiddleware,getWishlistProducts)
+
+//delete wishlist product
+router.delete('/delete-wishlist-product/:_id',jwtMiddleware,deleteWishlistProduct)
+
+
 
 export default router
