@@ -13,39 +13,39 @@ export const addCoupon = async (req, res) => {
 }
 
 //get all Coupon 
-export const getAllSeller = async (req, res) => {
+export const getAllCoupon = async (req, res) => {
     try {
-        const sellers = await Seller.find();
-        res.status(200).json(sellers);
+        const coupon = await Coupon.find();
+        res.status(200).json(coupon);
     } catch (err) {
         res.status(500).json(err)
     }
 }
 
-//get one seller
-export const getOneSeller = async (req, res) => {
+//get available Coupons
+export const getAvaialableCoupons = async (req, res) => {
     try {
-        const seller = await Seller.findById(req.params.id);
-        res.status(200).json(seller);
+        const coupons = await Coupon.find({ expiresOn: { $gte: new Date() }, price_limit: { $lte: req.params.amount } });
+        res.status(200).json(coupons);
     } catch (err) {
         res.status(500).json(err)
     }
 }
 
-//update seller
-export const updateSeller = async (req, res) => {
+//update Coupon
+export const updateCoupon = async (req, res) => {
     try {
-        const seller = await Seller.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.status(200).json(seller);
+        const coupon = await Coupon.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.status(200).json(coupon);
     } catch (err) {
         res.status(500).json(err)
     }
 }
 
-//delete seller
-export const deleteSeller = async (req, res) => {
+//delete Coupon
+export const deleteCoupon = async (req, res) => {
     try {
-        const deletedSeller = await Seller.findByIdAndDelete(req.params.id);
+        const deletedCoupon = await Coupon.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: 'Seller deleted successfully' });
     } catch (err) {
         res.status(500).json(err)

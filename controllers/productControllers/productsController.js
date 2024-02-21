@@ -12,8 +12,11 @@ export const addProduct = async (req, res) => {
     }
 }
 
+//get all products or by query
 export const getAllProducts = async (req, res) => {
-    const query = {};
+    const query = {
+        isActive: true
+    };
     if (req.query.category) {
         query.category = req.query.category;
     } else if (req.query.brand) {
@@ -26,7 +29,7 @@ export const getAllProducts = async (req, res) => {
         query.inStock = req.query.inStock;
     }
     try {
-        const products = await Product.find(query);
+        const products = await Product.find(query).populate("seller");
         res.status(200).json(products);
     } catch (err) {
         res.status(500).json(err);
@@ -36,8 +39,8 @@ export const getAllProducts = async (req, res) => {
 //get one product
 export const getOneProduct = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
-       product && res.status(200).json(product);
+        const product = await Product.findOne({ _id: req.params.id, isActive: true }).populate('seller');
+        product && res.status(200).json(product);
     } catch (err) {
         res.status(500).json(err)
     }
@@ -57,7 +60,7 @@ export const updateProduct = async (req, res) => {
 //delete product
 export const deleteProduct = async (req, res) => {
     try {
-        const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+        const disableProduct = await Product.findByIdAndUpdate(req.params.id, { $set: { isActive: false } }, { new: true });
         res.status(200).json({ message: 'product deleted successfully' });
     } catch (err) {
         res.status(500).json(err)

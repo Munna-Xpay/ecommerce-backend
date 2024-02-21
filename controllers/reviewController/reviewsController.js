@@ -15,17 +15,17 @@ export const addReview = async (req, res) => {
 //get all review or by query
 export const getAllReview = async (req, res) => {
     try {
-        const review = await Review.find();
+        const review = await Review.find().populate("reviewFrom");
         res.status(200).json(review);
     } catch (err) {
         res.status(500).json(err)
     }
 }
 
-//get one review
+//get reviews by product
 export const getOneReview = async (req, res) => {
     try {
-        const review = await Review.findById(req.params.id);
+        const review = await Review.findOne({ productId: req.params.productId }).populate("reviewFrom");
         res.status(200).json(review);
     } catch (err) {
         res.status(500).json(err)
