@@ -79,3 +79,31 @@ export const userProfileUpdate = async (req, res) => {
   }
 };
 
+//get all users
+export const getAllUsers=async (req,res)=>{
+  try{
+    const allUsers=await Users.find()
+    if(allUsers){
+      res.status(200).json(allUsers)
+    }
+    else{
+      res.status(404).json("Users empty")
+    }
+  }
+  catch(err){
+    res.status(401).json({ error: err, message: `All users access failed ` });
+
+  }
+}
+
+//delete user
+export const removeUser=async (req,res)=>{
+  const {_id}=req.params
+  try{
+    const deletedUser=await Users.findByIdAndDelete({_id})
+      res.status(200).json(deletedUser)
+  }
+  catch (err) {
+    res.status(401).json({ error: err, message: `User delete failed ` });
+  }
+}

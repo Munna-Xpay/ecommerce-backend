@@ -1,5 +1,5 @@
 import express from 'express';
-import { login, register, userProfileUpdate } from '../controllers/usersController/usersController.js';
+import { getAllUsers, login, register, removeUser, userProfileUpdate } from '../controllers/usersController/usersController.js';
 import fileUploads from '../middlewares/multerMiddleware.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { addToCart, cartProducts, decrementCartQty, deleteCartProduct, incrementCartQty } from '../controllers/cartControllers/cartController.js';
@@ -24,8 +24,11 @@ router.post('/login',validateUserLoginRequest,login)
 //updateUserPRofile
 router.put('/update-profile/:_id',jwtMiddleware,validateUserProfileUpdateRequest,fileUploads.single('profileImage'),userProfileUpdate)
 
+//all users
+router.get('/all-users',getAllUsers)
 
-
+//delete user
+router.delete('/delete-user/:_id',removeUser)
 
 //addtocart
 router.post('/add-to-cart',jwtMiddleware,validateCartRequest,addToCart)
