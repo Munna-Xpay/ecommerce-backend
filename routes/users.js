@@ -3,24 +3,27 @@ import { login, register, userProfileUpdate } from '../controllers/usersControll
 import fileUploads from '../middlewares/multerMiddleware.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { addToCart, cartProducts, decrementCartQty, deleteCartProduct, incrementCartQty } from '../controllers/cartControllers/cartController.js';
-import { validateUserRequest } from '../controllers/usersController/validation/usersValidation.js';
 import { addToWishlist, deleteWishlistProduct, getWishlistProducts} from '../controllers/wishlistController/wishlistController.js';
 import { validateCartRequest } from '../controllers/cartControllers/validation/cartValidation.js';
 import { validateWishlistRequest } from '../controllers/wishlistController/validation/wishlistValidation.js';
 import { allOrders, orderDetails, userOrder } from '../controllers/ordersValidation/ordersController.js';
-
+import { validateOrderRequest } from '../controllers/ordersValidation/validation/ordersValidation.js';
+import { validateUserLoginRequest } from '../controllers/usersController/validation/userLoginValidation.js';
+import {validateUserRegisterRequest} from '../controllers/usersController/validation/usersValidation.js'
+import { validateUserProfileUpdateRequest } from '../controllers/usersController/validation/userProfileUpdateValidation.js';
 
 const router = express.Router();
 
 
 //register
-router.post('/register',validateUserRequest,register)
+router.post('/register',validateUserRegisterRequest,register)
 
 //login
-router.post('/login',validateUserRequest,login)
+router.post('/login',validateUserLoginRequest,login)
 
 //updateUserPRofile
-router.put('/update-profile/:_id',jwtMiddleware,fileUploads.single('profileImage'),userProfileUpdate)
+router.put('/update-profile/:_id',jwtMiddleware,validateUserProfileUpdateRequest,fileUploads.single('profileImage'),userProfileUpdate)
+
 
 
 
@@ -40,6 +43,8 @@ router.put('/cart-decrement/:_id',jwtMiddleware,decrementCartQty)
 router.delete('/delete-cart-product/:_id',jwtMiddleware,deleteCartProduct)
 
 
+
+
 //add to wishlist
 router.post('/add-to-wishlist',jwtMiddleware,validateWishlistRequest,addToWishlist)
 
@@ -50,8 +55,10 @@ router.get('/wishlist-products',jwtMiddleware,getWishlistProducts)
 router.delete('/delete-wishlist-product/:_id',jwtMiddleware,deleteWishlistProduct)
 
 
+
+
 //order details
-router.post('/add-order-details',jwtMiddleware,orderDetails)
+router.post('/add-order-details',jwtMiddleware,validateOrderRequest,orderDetails)
 
 //user orders
 router.get('/user-orders',jwtMiddleware,userOrder)
