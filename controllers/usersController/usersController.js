@@ -58,22 +58,14 @@ export const login = async (req, res) => {
 
 //userProfile(Edit)
 export const userProfileUpdate = async (req, res) => {
-  const {fullName,email,address,phoneNum,birthday,gender,zipCode,city,country,profileImage}=req.body
   const { _id } = req.params;
-  
-
-  const profileImg=req.file?req.file.filename:profileImage
 
   try {
-    const currentUser = await Users.findOne({ _id });
-    if (currentUser) {
-      const update = await Users.findByIdAndUpdate({_id},{fullName,email,address,phoneNum,birthday,gender,zipCode,city,country,profileImage:profileImg},{
+      const updatedUser = await Users.findByIdAndUpdate(_id,req.body,{
         new: true
-      }).catch((e) => console.log(e));
-      update && res.status(200).json(update);
-    } else {
-      res.status(404).json("User not found!");
-    }
+      });
+    res.status(200).json(updatedUser)
+
   } catch (err) {
     res.status(401).json({ error: err, message: `Profile Update Failed ` });
   }
