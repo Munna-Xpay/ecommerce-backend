@@ -9,14 +9,24 @@ const productSchema = Joi.object({
     original_price: Joi.number().required(),
     memory: Joi.array().items(Joi.string()),
     colors: Joi.array().items(Joi.string()).required(),
-    category: Joi.array().items(Joi.string()),
+    category: Joi.string().required(),
     manufacturer: Joi.string().required(),
     warranty: Joi.string().required(),
     ships_from: Joi.string().required(),
     description: Joi.array().items(Joi.string()),
     shipping: Joi.string(),
     seller: Joi.string().required(),
-    tax: Joi.number()
+    tax: Joi.number(),
+    isActive: Joi.boolean(),
+    isBanner: Joi.boolean(),
+    isTodayOffer: Joi.boolean(),
+    isFeaturedProduct: Joi.boolean(),
+    isSpacialOffer: Joi.boolean(),
+    isFeaturedBrand: Joi.boolean(),
+    product_sold: Joi.number(),
+    brand_icon: Joi.string(),
+    review_start: Joi.number(),
+    sub_category: Joi.string()
 })
 
 const fileUploadSchema = Joi.object({

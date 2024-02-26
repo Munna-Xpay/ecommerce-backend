@@ -9,7 +9,7 @@ const router = express.Router();
 
 
 //add product route
-router.post('/add', fileUploads.fields([{ name: "thumbnail", maxCount: 1 }, { name: "images", maxCount: 4 }]), addProduct);
+router.post('/add', addProduct);
 
 //get products route
 router.get('/get', getAllProducts);
@@ -21,7 +21,7 @@ router.get('/get-one/:id', getOneProduct);
 router.put('/update/:id', jwtMiddleware, updateProduct);
 
 //delete product route
-router.delete('/delete/:id', jwtMiddleware, deleteProduct);
+router.delete('/delete/:id', deleteProduct);
 
 
 

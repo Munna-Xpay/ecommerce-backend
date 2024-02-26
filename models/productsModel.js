@@ -38,8 +38,8 @@ const productSchema = new mongoose.Schema({
         default: []
     },
     category: {
-        type: Array,
-        default: []
+        type: String,
+        required: true
     },
     manufacturer: {
         type: String,
@@ -72,6 +72,42 @@ const productSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    isBanner: {
+        type: Boolean,
+        default: false
+    },
+    isTodayOffer: {
+        type: Boolean,
+        default: false
+    },
+    isFeaturedProduct: {
+        type: Boolean,
+        default: false
+    },
+    isSpacialOffer: {
+        type: Boolean,
+        default: false
+    },
+    isFeaturedBrand: {
+        type: Boolean,
+        default: false
+    },
+    product_sold: {
+        type: Number,
+        default: 0
+    },
+    brand_icon: {
+        type: String,
+        default: ''
+    },
+    review_star: {
+        type: Number,
+        default: 0
+    },
+    sub_category: {
+        type: String,
+        default: ""
     }
 }, { timestamps: true })
 
