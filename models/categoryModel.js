@@ -15,7 +15,7 @@ const categorySchema = new mongoose.Schema({
         required: true
     },
     selledBy: {
-        type: String,
+        type: String, // create as type object id from seller model
         default:""
     }
 }, { timestamps: true })
