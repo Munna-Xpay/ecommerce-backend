@@ -2,9 +2,9 @@ import Joi from "joi";
 
 
 const categorySchema = Joi.object({
-    type: Joi.string(),
     category: Joi.string().required(),
     category_icon: Joi.string().required(),
+    sub_categories: Joi.array(),
     selledBy: Joi.string()
 })
 

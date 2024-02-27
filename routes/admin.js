@@ -12,7 +12,7 @@ const router = express.Router();
 router.post('/add-seller', jwtMiddleware, validateSellerRequest, addSeller);
 
 //get seller route
-router.get('/get-seller', jwtMiddleware, getAllSeller);
+router.get('/get-seller', getAllSeller);
 
 //get one seller route
 router.get('/get-one-seller/:id', jwtMiddleware, getOneSeller);

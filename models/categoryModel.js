@@ -2,10 +2,6 @@
 import mongoose from 'mongoose';
 
 const categorySchema = new mongoose.Schema({
-    type: {
-        type: String,
-        default:''
-    },
     category: {
         type: String,
         required: true
@@ -14,9 +10,13 @@ const categorySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    sub_categories: {
+        type: Array,
+        default: []
+    },
     selledBy: {
         type: String,
-        default:""
+        default: ""
     }
 }, { timestamps: true })
 
