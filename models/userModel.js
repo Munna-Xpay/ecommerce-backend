@@ -26,7 +26,7 @@ const userSchema=new mongoose.Schema({
         type:String,
     },
     zipCode:{
-        type:Number,
+        type:String,
     },
     city:{
         type:String,
@@ -36,6 +36,10 @@ const userSchema=new mongoose.Schema({
     },
     profileImage:{
         type:String
+    },
+    isAdmin:{
+        type:Boolean,
+        default:false
     }
 
 })

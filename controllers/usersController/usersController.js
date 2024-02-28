@@ -58,24 +58,44 @@ export const login = async (req, res) => {
 
 //userProfile(Edit)
 export const userProfileUpdate = async (req, res) => {
-  const {fullName,email,address,phoneNum,birthday,gender,zipCode,city,country,profileImage}=req.body
   const { _id } = req.params;
-  
-
-  const profileImg=req.file?req.file.filename:profileImage
 
   try {
-    const currentUser = await Users.findOne({ _id });
-    if (currentUser) {
-      const update = await Users.findByIdAndUpdate({_id},{fullName,email,address,phoneNum,birthday,gender,zipCode,city,country,profileImage:profileImg},{
+      const updatedUser = await Users.findByIdAndUpdate(_id,req.body,{
         new: true
-      }).catch((e) => console.log(e));
-      update && res.status(200).json(update);
-    } else {
-      res.status(404).json("User not found!");
-    }
+      });
+    res.status(200).json(updatedUser)
+
   } catch (err) {
     res.status(401).json({ error: err, message: `Profile Update Failed ` });
   }
 };
 
+//get all users
+export const getAllUsers=async (req,res)=>{
+  try{
+    const allUsers=await Users.find()
+    if(allUsers){
+      res.status(200).json(allUsers)
+    }
+    else{
+      res.status(404).json("Users empty")
+    }
+  }
+  catch(err){
+    res.status(401).json({ error: err, message: `All users access failed ` });
+
+  }
+}
+
+//delete user
+export const removeUser=async (req,res)=>{
+  const {_id}=req.params
+  try{
+    const deletedUser=await Users.findByIdAndDelete({_id})
+      res.status(200).json(deletedUser)
+  }
+  catch (err) {
+    res.status(401).json({ error: err, message: `User delete failed ` });
+  }
+}
