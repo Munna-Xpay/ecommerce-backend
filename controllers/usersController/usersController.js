@@ -59,7 +59,6 @@ export const login = async (req, res) => {
 //userProfile(Edit)
 export const userProfileUpdate = async (req, res) => {
   const { _id } = req.params;
-
   try {
       const updatedUser = await Users.findByIdAndUpdate(_id,req.body,{
         new: true
@@ -70,6 +69,8 @@ export const userProfileUpdate = async (req, res) => {
     res.status(401).json({ error: err, message: `Profile Update Failed ` });
   }
 };
+
+
 
 //get all users
 export const getAllUsers=async (req,res)=>{
@@ -87,6 +88,8 @@ export const getAllUsers=async (req,res)=>{
 
   }
 }
+
+
 
 //delete user
 export const removeUser=async (req,res)=>{

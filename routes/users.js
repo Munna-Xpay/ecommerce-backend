@@ -24,11 +24,14 @@ router.post('/login',validateUserLoginRequest,login)
 //updateUserPRofile
 router.put('/update-profile/:_id',jwtMiddleware,userProfileUpdate)
 
+
 //all users
 router.get('/all-users',getAllUsers)
 
 //delete user
 router.delete('/delete-user/:_id',removeUser)
+
+
 
 //addtocart
 router.post('/add-to-cart',jwtMiddleware,validateCartRequest,addToCart)
