@@ -22,7 +22,7 @@ router.post('/register',validateUserRegisterRequest,register)
 router.post('/login',validateUserLoginRequest,login)
 
 //updateUserPRofile
-router.put('/update-profile/:_id',jwtMiddleware,validateUserProfileUpdateRequest,userProfileUpdate)
+router.put('/update-profile/:_id',jwtMiddleware,userProfileUpdate)
 
 //all users
 router.get('/all-users',getAllUsers)
