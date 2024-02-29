@@ -31,16 +31,16 @@ export const getAllProducts = async (req, res) => {
     } else if (req.query.shipping) {
         query.shipping = req.query.shipping;
     } else if (req.query.inStock) {
-        query.inStock = req.query.inStock;
+        query.inStock = req.query.inStock == 'true' ? true : false;
     } else if (req.query.review) {
         query.review_star = { $gte: req.query.review };
     }
 
     try {
-        if (req.query.oldest) {
+        if (req.query.sort == 'oldest') {
             const products = await Product.find(query).populate("seller");
             res.status(200).json(products);
-        } else if (req.query.popular) {
+        } else if (req.query.sort == "popular") {
             const products = await Product.find(query).populate("seller").sort({ review_star: -1 });
             res.status(200).json(products);
         } else {
@@ -78,6 +78,23 @@ export const deleteProduct = async (req, res) => {
     try {
         const disableProduct = await Product.findByIdAndUpdate(req.params.id, { $set: { isActive: false } }, { new: true });
         res.status(200).json({ message: 'product deleted successfully' });
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+//get all brands from all document
+
+export const getBrands = async (req, res) => {
+    try {
+        const allBrands = await Product.aggregate([
+            {
+                $group: {
+                    _id: "$manufacturer"
+                }
+            }
+        ])
+        res.status(200).json(allBrands);
     } catch (err) {
         res.status(500).json(err)
     }
