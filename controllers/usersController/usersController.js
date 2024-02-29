@@ -90,6 +90,23 @@ export const getAllUsers=async (req,res)=>{
 }
 
 
+export const getUserById=async(req,res)=>{
+  const {_id}=req.params
+  try{
+    const selectedUser=await Users.findById({_id})
+    if(selectedUser){
+      res.status(200).json(selectedUser)
+    }
+    else{
+      res.status(404).json('User not found!')
+    }
+  }
+  catch(err){
+    res.status(401).json({ error: err, message: `User  access failed ` });
+
+  }
+}
+
 
 //delete user
 export const removeUser=async (req,res)=>{
