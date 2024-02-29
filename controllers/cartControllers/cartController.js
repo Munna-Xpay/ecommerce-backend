@@ -70,7 +70,7 @@ export const decrementCartQty = async (req, res) => {
 export const deleteCartProduct = async (req, res) => {
     const { _id } = req.params
     try {
-        const removedProduct = await Cart.findByIdAndDelete({ _id })
+        const removedProduct = await Cart.findByIdAndDelete(_id)
         res.status(200).json(removedProduct)
     }
     catch (err) {
