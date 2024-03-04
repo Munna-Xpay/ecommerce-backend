@@ -19,23 +19,29 @@ export const addProduct = async (req, res) => {
 
 //get all products or by query
 export const getAllProducts = async (req, res) => {
+    console.log(req.query)
     const query = {
         isActive: true
     };
     if (req.query.category) {
         query.category = req.query.category;
-    } else if (req.query.brand) {
+    }
+    if (req.query.brand) {
         query.manufacturer = req.query.brand;
-    } else if (req.query.min && req.query.max) {
+    }
+    if (req.query.min && req.query.max) {
         query.discounted_price = { $gte: req.query.min, $lte: req.query.max };
-    } else if (req.query.shipping) {
+    }
+    if (req.query.shipping) {
         query.shipping = req.query.shipping;
-    } else if (req.query.inStock) {
+    }
+    if (req.query.inStock) {
         query.inStock = req.query.inStock == 'true' ? true : false;
-    } else if (req.query.review) {
+    }
+    if (req.query.review) {
         query.review_star = { $gte: req.query.review };
     }
-
+    // console.log(query)
     try {
         if (req.query.sort == 'oldest') {
             const products = await Product.find(query).populate("seller");
