@@ -1,7 +1,6 @@
 import Joi from "joi";
 
 const wishlistSchema=Joi.object({
-    userId:Joi.string().required(),
     product:Joi.string().required(),
     original_price:Joi.number().required(),
 })
