@@ -66,6 +66,20 @@ export const decrementCartQty = async (req, res) => {
     }
 }
 
+// //change quantity
+export const changeCartQuantity = async (req, res) => {
+    const { id } = req.params
+    const { original_price, quantity } = req.body
+    try {
+        const updatedCartItem = await Cart.findByIdAndUpdate(id, { quantity, original_price: quantity * original_price }, { new: true })
+        const newCartItem = await Cart.findById(id).populate('product')
+        res.status(200).json(newCartItem)
+    }
+    catch (err) {
+        res.status(401).json({ eror: err, message: 'Quantity decrement failed' })
+    }
+}
+
 //remove cart product
 export const deleteCartProduct = async (req, res) => {
     const { _id } = req.params

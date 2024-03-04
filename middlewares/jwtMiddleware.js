@@ -5,7 +5,7 @@ export const jwtMiddleware = (req, res, next) => {
     if (req.headers.user_token) {
         //access token
         const token = req.headers['user_token'].split(" ")[1]
-        console.log(token)
+        // console.log(token)
 
         //verification
         try {
