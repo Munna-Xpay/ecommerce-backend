@@ -19,7 +19,7 @@ export const addProduct = async (req, res) => {
 
 //get all products or by query
 export const getAllProducts = async (req, res) => {
-    console.log(req.query)
+    // console.log(req.query)
     const query = {
         isActive: true
     };

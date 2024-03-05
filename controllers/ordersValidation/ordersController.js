@@ -10,6 +10,9 @@ export const orderDetails = async (req, res) => {
     try {
         const newOrder = new Order({ ...req.body, userId: req.payload })
         await newOrder.save()
+        req.body.products.map(async (item) => {
+            await Products.findByIdAndUpdate(item.product._id, { $set: { product_sold: item.product.product_sold + 1 } })
+        })
         const AllOrdersWithNewOne = await Order.aggregate([
             {
                 $match: {
