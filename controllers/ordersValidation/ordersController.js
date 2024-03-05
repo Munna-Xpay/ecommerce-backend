@@ -1,10 +1,12 @@
 import Order from "../../models/ordersModel.js";
+import Products from "../../models/productsModel.js";
 import mongoose from "mongoose";
 
 
 //checkout details
 export const orderDetails = async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.payload);
+    console.log(req.body)
     try {
         const newOrder = new Order({ ...req.body, userId: req.payload })
         await newOrder.save()
