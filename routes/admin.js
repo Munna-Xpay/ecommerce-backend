@@ -1,11 +1,12 @@
 import express from 'express';
-import { addSeller, deleteSeller, getAllSeller, getOneSeller, updateSeller } from '../controllers/sellerController/sellerController.js';
+import { addSeller, deleteSeller, getAllSeller, getOneSeller, getSellersWithProducts, updateSeller } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
 import { addCategory, deleteCategory, getAllCategory, getCategoryByType, updateCategory } from '../controllers/categoryController/categoryControllers.js';
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
+import { getOrdersAndIncomeOfThisYear, updateOrder } from '../controllers/ordersValidation/ordersController.js';
 const router = express.Router();
 
 //add seller route
@@ -22,6 +23,9 @@ router.put('/update-seller/:id', jwtMiddleware, updateSeller);
 
 //delete seller route
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
+
+//get sellers with products route
+router.get('/get-seller-with-product',getSellersWithProducts );
 
 
 
@@ -56,6 +60,11 @@ router.put('/update-coupon/:id', jwtMiddleware, updateCoupon);
 
 //delete Coupon route
 router.delete('/delete-coupon/:id', jwtMiddleware, deleteCoupon);
+
+
+router.get('/get-orders-by-month', getOrdersAndIncomeOfThisYear)
+
+router.put('/update-orders/:id', updateOrder)
 
 
 export default router

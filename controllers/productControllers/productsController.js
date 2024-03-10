@@ -105,3 +105,6 @@ export const getBrands = async (req, res) => {
         res.status(500).json(err)
     }
 }
+
+
+

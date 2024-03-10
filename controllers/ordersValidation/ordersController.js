@@ -126,4 +126,54 @@ export const cancelOrder = async (req, res) => {
     catch (err) {
         res.status(401).json({ error: err, message: 'Failed to cancel order' })
     }
-} 
+}
+
+//update order
+export const updateOrder = async (req, res) => {
+    try {
+        await Order.findByIdAndUpdate(req.params.id, { $set: req.body })
+        res.status(200).json({ message: "Updated successfully" })
+    }
+    catch (err) {
+        res.status(401).json({ error: err, message: 'Orders details update failed' })
+    }
+}
+
+//get Orders And Income Of This Year
+export const getOrdersAndIncomeOfThisYear = async (req, res) => {
+    try {
+        const thisYearStat = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: new Date(new Date().getFullYear(), 0, 1), // Start of the current year
+                        $lt: new Date(new Date().getFullYear() + 1, 0, 1) // Start of next year
+                    }
+                }
+            },
+            {
+                $unwind: "$products"
+            },
+            {
+                $project: {
+                    month: { $month: "$dateOrdered" },
+                    price: "$totalPrice"
+                }
+            },
+            {
+                $group: {
+                    _id: "$month",
+                    orderCount: { $sum: 1 },
+                    monthlyIncome: { $sum: "$price" }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ]);
+        res.status(200).json(thisYearStat);
+    }
+    catch (err) {
+        res.status(401).json({ error: err, message: 'Failed to fetch data' })
+    }
+}

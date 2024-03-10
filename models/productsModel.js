@@ -62,7 +62,8 @@ const productSchema = new mongoose.Schema({
         default: "Free"
     },
     seller: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'sellers',
         required: true
     },
     tax: {
