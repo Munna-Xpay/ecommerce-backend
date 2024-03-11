@@ -106,6 +106,7 @@ export const getBrands = async (req, res) => {
     }
 }
 
+
 //products total price by category
 export const getPriceByCategory=async (req,res)=>{
     try{
@@ -142,4 +143,6 @@ res.status(200).json(products)
         res.status(500).json(err)
     }
 }
+
+
 
