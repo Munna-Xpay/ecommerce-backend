@@ -10,7 +10,7 @@ const wishlistSchema=new mongoose.Schema({
         ref:'products',
         required:true
     },
-    price:{
+    original_price:{
        type:Number,
        required:true
     }

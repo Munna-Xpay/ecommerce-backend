@@ -4,16 +4,16 @@ export const addToWishlist=async(req,res)=>{
     
     const userId=req.payload
 
-    const {id,quantity,price}=req.body
+    const {product,original_price}=req.body
 
     try{
-        const existingProduct=await Wishlist.findOne({product:id,userId})
+        const existingProduct=await Wishlist.findOne({product,userId})
         if(existingProduct){
             res.status(400).json('Product already exists in wishlist!')
         }
         else{
             const newProduct=new Wishlist({
-                product:id,userId,quantity,price
+                product,userId,original_price
             })
             await newProduct.save()
             const allWishlistProducts=await Wishlist.find({userId}).populate('product')
