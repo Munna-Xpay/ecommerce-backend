@@ -6,7 +6,7 @@ import { addCategory, deleteCategory, getAllCategory, getCategoryByType, updateC
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
-import { getOrdersAndIncomeOfThisYear, updateOrder } from '../controllers/ordersValidation/ordersController.js';
+import { getIncomeStatOfAParticularSeller, getOrdersAndIncomeOfThisYear, updateOrder } from '../controllers/ordersValidation/ordersController.js';
 const router = express.Router();
 
 //add seller route
@@ -63,6 +63,9 @@ router.delete('/delete-coupon/:id', jwtMiddleware, deleteCoupon);
 
 
 router.get('/get-orders-by-month', getOrdersAndIncomeOfThisYear)
+
+//get income stat of a particular seller
+router.get('/get-income-seller', getIncomeStatOfAParticularSeller)
 
 router.put('/update-orders/:id', updateOrder)
 

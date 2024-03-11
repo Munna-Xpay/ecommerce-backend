@@ -177,3 +177,42 @@ export const getOrdersAndIncomeOfThisYear = async (req, res) => {
         res.status(401).json({ error: err, message: 'Failed to fetch data' })
     }
 }
+
+//get income stat of a particular seller
+export const getIncomeStatOfAParticularSeller = async (req, res) => {
+    try {
+        const IncomeStatOfAParticularSeller = await Order.aggregate([
+            {
+                "$unwind": { "path": "$products", "preserveNullAndEmptyArrays": true }
+            },
+            {
+                $addFields: {
+                    productId: { $toObjectId: '$products.product.seller' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'sellers',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'seller'
+                }
+            },
+            {
+                "$unwind": { "path": "$seller", "preserveNullAndEmptyArrays": true }
+            },
+            {
+                $group: {
+                    _id: '$seller._id',
+                    total_income: { $sum: "$totalPrice" },
+                    total_orders: { $sum: 1 },
+                    categories: { $addToSet: { category: "$products.product.category", total_price: { $multiply: ["$products.product.discounted_price", "$products.product.product_sold"] } } }
+                }
+            }
+        ]);
+        res.status(200).json(IncomeStatOfAParticularSeller);
+    }
+    catch (err) {
+        res.status(401).json({ error: err, message: 'Failed to fetch data' })
+    }
+}
