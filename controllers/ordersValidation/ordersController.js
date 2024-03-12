@@ -206,7 +206,6 @@ export const getIncomeStatOfAParticularSeller = async (req, res) => {
                     _id: '$seller._id',
                     total_income: { $sum: "$totalPrice" },
                     total_orders: { $sum: 1 },
-                    categories: { $addToSet: { category: "$products.product.category", total_price: { $multiply: ["$products.product.discounted_price", "$products.product.product_sold"] } } }
                 }
             }
         ]);
