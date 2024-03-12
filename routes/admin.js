@@ -7,7 +7,6 @@ import { validateCategoryRequest } from '../controllers/categoryController/valid
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
 import { getIncomeStatOfAParticularSeller, getOrdersAndIncomeOfThisYear, updateOrder } from '../controllers/ordersValidation/ordersController.js';
-import { getOrdersAndIncomeOfThisYear, updateOrder } from '../controllers/ordersValidation/ordersController.js';
 
 const router = express.Router();
 
