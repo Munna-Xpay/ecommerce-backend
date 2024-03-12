@@ -6,7 +6,6 @@ import { addCategory, deleteCategory, getAllCategory, getCategoryByType, updateC
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
-import { getOrdersAndIncomeOfThisYear, updateOrder } from '../controllers/ordersValidation/ordersController.js';
 const router = express.Router();
 
 //add seller route
@@ -67,4 +66,9 @@ router.get('/get-orders-by-month', getOrdersAndIncomeOfThisYear)
 router.put('/update-orders/:id', updateOrder)
 
 
+//get price by category
+router.get('/price-by-category',jwtMiddleware,getPriceByCategory)
+
+//get products by category
+router.get('/product-by-category',jwtMiddleware,getProductsByCategory)
 export default router
