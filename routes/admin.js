@@ -1,12 +1,12 @@
 import express from 'express';
-import { addSeller, deleteSeller, getAllSeller, getOneSeller, getSellersWithProducts, updateSeller } from '../controllers/sellerController/sellerController.js';
+import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, updateSeller } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
 import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
-import { getIncomeStatOfAParticularSeller, getOrdersAndIncomeOfThisYear, updateOrder } from '../controllers/ordersValidation/ordersController.js';
+import { getOrdersAndIncomeOfThisYear, getSalesActivity, updateOrder } from '../controllers/ordersValidation/ordersController.js';
 
 const router = express.Router();
 
@@ -24,9 +24,6 @@ router.put('/update-seller/:id', jwtMiddleware, updateSeller);
 
 //delete seller route
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
-
-//get sellers with products route
-router.get('/get-seller-with-product', getSellersWithProducts);
 
 
 
@@ -78,11 +75,13 @@ router.get('/price-by-category', jwtMiddleware, getPriceByCategory)
 //get products by category
 router.get('/product-by-category', jwtMiddleware, getProductsByCategory)
 
-router.get('/product-by-category',jwtMiddleware,getProductsByCategory)
-
 //get seller product by category
-router.get('/seller-category',jwtMiddleware,getSellerProductByCategory)
+router.get('/seller-category', jwtMiddleware, getSellerProductByCategory)
 
 //products grid
-router.get('/products-grid',jwtMiddleware,getProductsGrid)
+router.get('/products-grid', jwtMiddleware, getProductsGrid)
+
+//get sales activity route
+router.get('/get-sales-activity', getSalesActivity)
+
 export default router

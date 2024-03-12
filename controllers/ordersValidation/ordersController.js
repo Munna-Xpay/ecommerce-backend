@@ -178,40 +178,63 @@ export const getOrdersAndIncomeOfThisYear = async (req, res) => {
     }
 }
 
-//get income stat of a particular seller
-export const getIncomeStatOfAParticularSeller = async (req, res) => {
+//get sales activity by seller
+export const getSalesActivity = async (req, res) => {
     try {
-        const IncomeStatOfAParticularSeller = await Order.aggregate([
+        const thisYearStat = await Order.aggregate([
             {
-                "$unwind": { "path": "$products", "preserveNullAndEmptyArrays": true }
+                $match: {
+                    createdAt: {
+                        $gte: new Date(new Date().getFullYear(), 0, 1), // Start of the current year
+                        $lt: new Date(new Date().getFullYear() + 1, 0, 1) // Start of next year
+                    }
+                }
             },
             {
-                $addFields: {
-                    productId: { $toObjectId: '$products.product.seller' }
+                $unwind: "$products"
+            },
+            {
+                $project: {
+                    month: { $month: "$dateOrdered" },
+                    price: "$totalPrice",
+                    sellerId: { $toObjectId: "$products.product.seller" }
                 }
             },
             {
                 $lookup: {
                     from: 'sellers',
-                    localField: 'productId',
+                    localField: 'sellerId',
                     foreignField: '_id',
                     as: 'seller'
                 }
             },
             {
-                "$unwind": { "path": "$seller", "preserveNullAndEmptyArrays": true }
+                $unwind: "$seller"
             },
             {
                 $group: {
-                    _id: '$seller._id',
-                    total_income: { $sum: "$totalPrice" },
-                    total_orders: { $sum: 1 },
+                    _id: { sellerId: "$seller._id", month: "$month" },
+                    monthlyIncome: { $sum: "$price" }
+                }
+            },
+            {
+                $sort: { "_id.month": 1 }
+            },
+            {
+                $group: {
+                    _id: "$_id.sellerId",
+                    monthlyStat: { $push: { month: "$_id.month", monthlyIncome: "$monthlyIncome" } }
+                    // doc: { $push: "$$ROOT" },
                 }
             }
+            // {
+            //     $sort: { _id: 1 }
+            // }
         ]);
-        res.status(200).json(IncomeStatOfAParticularSeller);
+        res.status(200).json(thisYearStat);
     }
     catch (err) {
         res.status(401).json({ error: err, message: 'Failed to fetch data' })
     }
 }
+
