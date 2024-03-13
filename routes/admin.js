@@ -60,11 +60,11 @@ router.put('/update-coupon/:id', jwtMiddleware, updateCoupon);
 router.delete('/delete-coupon/:id', jwtMiddleware, deleteCoupon);
 
 
-
-router.get('/get-orders-by-month', getOrdersAndIncomeOfThisYear)
+//get order stat by month
+router.get('/get-orders-by-month', jwtMiddleware, getOrdersAndIncomeOfThisYear)
 
 //get income stat of a particular seller
-router.get('/get-income-seller', getIncomeStatOfAParticularSeller)
+router.get('/get-income-seller', jwtMiddleware, getIncomeStatOfAParticularSeller)
 
 router.put('/update-orders/:id', updateOrder)
 
@@ -82,9 +82,9 @@ router.get('/seller-category', jwtMiddleware, getSellerProductByCategory)
 router.get('/products-grid', jwtMiddleware, getProductsGrid)
 
 //get sales activity route
-router.get('/get-sales-activity', getSalesActivity)
+router.get('/get-sales-activity',jwtMiddleware, getSalesActivity)
 
 //get sales activity route
-router.get('/get-period-sales-revenue', getPeriodSalesRevenue)
+router.get('/get-period-sales-revenue',jwtMiddleware, getPeriodSalesRevenue)
 
 export default router
