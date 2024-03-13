@@ -224,14 +224,82 @@ export const getSalesActivity = async (req, res) => {
                 $group: {
                     _id: "$_id.sellerId",
                     monthlyStat: { $push: { month: "$_id.month", monthlyIncome: "$monthlyIncome" } }
+                }
+            }
+        ]);
+        res.status(200).json(thisYearStat);
+    }
+    catch (err) {
+        res.status(401).json({ error: err, message: 'Failed to fetch data' })
+    }
+}
+
+//get periodic sales revenue by seller
+export const getPeriodSalesRevenue = async (req, res) => {
+    try {
+        const periodSalesRevenueBySeller = await Order.aggregate([
+            {
+                $project: {
+                    month: { $month: "$dateOrdered" },
+                    products: 1,
+                    dateOrdered: 1,
+                    totalPrice: 1
+                }
+            },
+            {
+                $match: {
+                    month: new Date().getMonth() + 1
+                }
+            },
+            {
+                $unwind: "$products"
+            },
+            {
+                $addFields: {
+                    dateOnly: {
+                        $dateToString: {
+                            format: "%Y-%m-%d", // Specify the desired format (YYYY-MM-DD)
+                            date: "$dateOrdered" // Replace with your actual date field
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    date: "$dateOnly",
+                    price: "$totalPrice",
+                    sellerId: { $toObjectId: "$products.product.seller" }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'sellers',
+                    localField: 'sellerId',
+                    foreignField: '_id',
+                    as: 'seller'
+                }
+            },
+            {
+                $unwind: "$seller"
+            },
+            {
+                $group: {
+                    _id: { sellerId: "$seller._id", date: "$date" },
+                    dailyIncome: { $sum: "$price" }
+                }
+            },
+            {
+                $sort: { "_id.date": 1 }
+            },
+            {
+                $group: {
+                    _id: "$_id.sellerId",
+                    dailyStat: { $push: { date: "$_id.date", dailyIncome: "$dailyIncome" } }
                     // doc: { $push: "$$ROOT" },
                 }
             }
-            // {
-            //     $sort: { _id: 1 }
-            // }
         ]);
-        res.status(200).json(thisYearStat);
+        res.status(200).json(periodSalesRevenueBySeller);
     }
     catch (err) {
         res.status(401).json({ error: err, message: 'Failed to fetch data' })

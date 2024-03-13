@@ -6,7 +6,7 @@ import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPric
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
-import { getOrdersAndIncomeOfThisYear, getSalesActivity, updateOrder } from '../controllers/ordersValidation/ordersController.js';
+import { getOrdersAndIncomeOfThisYear, getPeriodSalesRevenue, getSalesActivity, updateOrder } from '../controllers/ordersValidation/ordersController.js';
 
 const router = express.Router();
 
@@ -83,5 +83,8 @@ router.get('/products-grid', jwtMiddleware, getProductsGrid)
 
 //get sales activity route
 router.get('/get-sales-activity', getSalesActivity)
+
+//get sales activity route
+router.get('/get-period-sales-revenue', getPeriodSalesRevenue)
 
 export default router
