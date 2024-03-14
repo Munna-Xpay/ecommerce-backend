@@ -7,11 +7,12 @@ import { validateCategoryRequest } from '../controllers/categoryController/valid
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
 import { getOrdersAndIncomeOfThisYear, getPeriodSalesRevenue, getSalesActivity, updateOrder } from '../controllers/ordersValidation/ordersController.js';
+import fileUploads from '../middlewares/multerMiddleware.js';
 
 const router = express.Router();
 
 //add seller route
-router.post('/add-seller', jwtMiddleware, validateSellerRequest, addSeller);
+router.post('/add-seller', jwtMiddleware, fileUploads.single("company_icon"), validateSellerRequest, addSeller);
 
 //get seller route
 router.get('/get-seller', getAllSeller);
@@ -20,7 +21,7 @@ router.get('/get-seller', getAllSeller);
 router.get('/get-one-seller/:id', jwtMiddleware, getOneSeller);
 
 //update seller route
-router.put('/update-seller/:id', jwtMiddleware, updateSeller);
+router.put('/update-seller/:id', jwtMiddleware, fileUploads.single("company_icon"), updateSeller);
 
 //delete seller route
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
@@ -82,9 +83,9 @@ router.get('/seller-category', jwtMiddleware, getSellerProductByCategory)
 router.get('/products-grid', jwtMiddleware, getProductsGrid)
 
 //get sales activity route
-router.get('/get-sales-activity',jwtMiddleware, getSalesActivity)
+router.get('/get-sales-activity', jwtMiddleware, getSalesActivity)
 
 //get sales activity route
-router.get('/get-period-sales-revenue',jwtMiddleware, getPeriodSalesRevenue)
+router.get('/get-period-sales-revenue', jwtMiddleware, getPeriodSalesRevenue)
 
 export default router

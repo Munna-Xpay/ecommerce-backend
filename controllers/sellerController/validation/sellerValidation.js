@@ -11,7 +11,7 @@ const sellerSchema = Joi.object({
     city: Joi.string(),
     country: Joi.string().required(),
     company_name: Joi.string().required(),
-    company_icon: Joi.string().required(),
+    company_icon: Joi.object(),
     website: Joi.string().required()
 })
 
