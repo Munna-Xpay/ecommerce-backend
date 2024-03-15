@@ -172,3 +172,97 @@ export const getIncomeStatOfAParticularSeller = async (req, res) => {
     }
 }
 
+//get seller reviwe stat
+export const getSellerReviewStat = async (req, res) => {
+
+    try {
+        const sellerReviewStat = await Seller.aggregate([
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: 'seller',
+                    as: 'products'
+                }
+            },
+            {
+                $unwind: { path: "$products", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    productId: "$products._id"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'reviews',
+                    localField: 'productId',
+                    foreignField: 'productId',
+                    as: 'reviews'
+                }
+            },
+            {
+                $unwind: { path: "$reviews", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $group: {
+                    _id: { sellerId: "$_id", review_star: "$reviews.review_stars" },
+                    avg_review: { $avg: "$reviews.review_stars" },
+                    ratings: { $push: "$reviews" },
+                    // docs: { $push: "$$ROOT" }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    avg_review: 1,
+                    ratings: 1,
+                    total_rating: { $size: "$ratings" }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.sellerId",
+                    avg_review: { $avg: "$avg_review" },
+                    total_rating: { $sum: "$total_rating" },
+                    rating_stat: { $push: { star: "$_id.review_star", total_rating: "$total_rating" } },
+                    ratings: { $push: "$ratings" }
+                }
+            },
+            {
+                $unwind: { path: "$ratings", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $unwind: { path: "$ratings", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $group: {
+                    _id: {
+                        sellerId: "$_id",
+                        avg_review: "$avg_review",
+                        total_rating: "$total_rating",
+                        rating_stat: "$rating_stat"
+                    },
+                    ratings: { $push: "$ratings" }
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id.sellerId",
+                    avg_review: "$_id.avg_review",
+                    total_rating: "$_id.total_rating",
+                    rating_stat: "$_id.rating_stat",
+                    ratings: 1
+                }
+            },
+            {
+                $sort: { total_rating: -1 }
+            }
+        ]);
+        res.status(200).json(sellerReviewStat);
+    }
+    catch (err) {
+        res.status(401).json({ error: err, message: 'Failed to fetch seller review stat' })
+    }
+}

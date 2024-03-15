@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, updateSeller } from '../controllers/sellerController/sellerController.js';
+import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updateSeller } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
 import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
@@ -16,6 +16,9 @@ router.post('/add-seller', jwtMiddleware, fileUploads.single("company_icon"), va
 
 //get seller route
 router.get('/get-seller', getAllSeller);
+
+//get seller review stat route
+router.get('/get-seller-review-stat', jwtMiddleware, getSellerReviewStat);
 
 //get one seller route
 router.get('/get-one-seller/:id', jwtMiddleware, getOneSeller);
