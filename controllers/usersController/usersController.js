@@ -75,13 +75,56 @@ export const userProfileUpdate = async (req, res) => {
 //get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await Users.find()
-    if (allUsers) {
-      res.status(200).json(allUsers)
-    }
-    else {
-      res.status(404).json("Users empty")
-    }
+    const allUsers = await Users.aggregate([
+      {
+        $match: { "birthday": { $exists: true } } // Filter out documents without DateOfBirth
+      },
+      {
+        $project: {
+          "dateOfBirth": {
+            $dateFromString: {
+              dateString: "$birthday",
+              format: "%Y-%m-%d" // Specify the format
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          "age": {
+            $floor: {
+              $divide: [
+                { $subtract: [new Date(), "$DateOfBirth"] },
+                31536000000 // Milliseconds in a year (365 days)
+              ]
+            }
+          }
+        }
+      },
+      {
+        $bucket: {
+          groupBy: "$age",
+          boundaries: [8,18, 26, 36, 46], // Define your age ranges (adjust as needed)
+          default: "Other", // Group any remaining ages
+          output: {
+            "count": { $sum: 1 }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          ageGroups: { $push: { ageRange: "$_id", count: "$count" } }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          ageGroups: 1
+        }
+      }
+    ]);
+    res.status(200).json(allUsers)
   }
   catch (err) {
     res.status(401).json({ error: err, message: `All users access failed ` });
@@ -110,7 +153,7 @@ export const getUserById = async (req, res) => {
 
 //update user profile picture
 export const updateProfilePicture = async (req, res) => {
-  console.log("ggggggggg")
+  // console.log("ggggggggg")
   const { id } = req.params
   const profileImage = req.file.filename
   console.log(profileImage)
