@@ -1,5 +1,6 @@
 import Order from "../../models/ordersModel.js";
 import Products from "../../models/productsModel.js";
+import User from "../../models/userModel.js";
 import mongoose from "mongoose";
 
 
@@ -11,7 +12,8 @@ export const orderDetails = async (req, res) => {
         const newOrder = new Order({ ...req.body, userId: req.payload })
         await newOrder.save()
         req.body.products.map(async (item) => {
-            await Products.findByIdAndUpdate(item.product._id, { $set: { product_sold: item.product.product_sold + 1,stockQuantity:item.product.stockQuantity-1 } })
+            await Products.findByIdAndUpdate(item.product._id, { $set: { product_sold: item.product.product_sold + 1, stockQuantity: item.product.stockQuantity - 1 } })
+            await User.findByIdAndUpdate(req.payload, { $inc: { ordersCount: +1 } })
         })
         const AllOrdersWithNewOne = await Order.aggregate([
             {
@@ -67,7 +69,7 @@ export const userOrder = async (req, res) => {
 //all orders (admin)
 export const allOrders = async (req, res) => {
     try {
-        const orders = await Order.find()
+        const orders = await Order.find().populate('userId')
         if (orders) {
             res.status(200).json(orders)
         }
@@ -106,6 +108,8 @@ export const cancelOrder = async (req, res) => {
             // console.log(orderToBeDeleting)
             await Order.findByIdAndDelete(req.params.id)
         }
+        await User.findByIdAndUpdate(req.payload, { $inc: { ordersCount: -1 } })
+        await Products.findByIdAndUpdate(req.body.productId, { $inc: { product_sold: - 1, stockQuantity: + 1 } })
         const AllOrdersWithUpdation = await Order.aggregate([
             {
                 $match: {
@@ -131,8 +135,8 @@ export const cancelOrder = async (req, res) => {
 //update order
 export const updateOrder = async (req, res) => {
     try {
-        await Order.findByIdAndUpdate(req.params.id, { $set: req.body })
-        res.status(200).json({ message: "Updated successfully" })
+        const updatedOrder = await Order.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+        res.status(200).json(updatedOrder)
     }
     catch (err) {
         res.status(401).json({ error: err, message: 'Orders details update failed' })
@@ -184,7 +188,7 @@ export const getSalesActivity = async (req, res) => {
         const thisYearStat = await Order.aggregate([
             {
                 $match: {
-                    createdAt: {
+                    dateOrdered: {
                         $gte: new Date(new Date().getFullYear(), 0, 1), // Start of the current year
                         $lt: new Date(new Date().getFullYear() + 1, 0, 1) // Start of next year
                     }
@@ -197,7 +201,7 @@ export const getSalesActivity = async (req, res) => {
                 $project: {
                     month: { $month: "$dateOrdered" },
                     price: "$totalPrice",
-                    sellerId: { $toObjectId: "$products.product.seller" }
+                    sellerId: { $toObjectId: "$products.product.seller._id" }
                 }
             },
             {
@@ -268,7 +272,7 @@ export const getPeriodSalesRevenue = async (req, res) => {
                 $project: {
                     date: "$dateOnly",
                     price: "$totalPrice",
-                    sellerId: { $toObjectId: "$products.product.seller" }
+                    sellerId: { $toObjectId: "$products.product.seller._id" }
                 }
             },
             {

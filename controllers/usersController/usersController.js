@@ -73,9 +73,14 @@ export const userProfileUpdate = async (req, res) => {
 
 
 //get all users
-export const getAllUsers = async (req, res) => {
+export const getAllUsersWithStat = async (req, res) => {
+  const currentDate = new Date();
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - 30);
   try {
-    const allUsers = await Users.aggregate([
+    const allUsers = await Users.find()
+    const newUsersCount = (await Users.find({ registeredAt: { $gte: startDate, $lt: currentDate } })).length
+    const userSegmentStat = await Users.aggregate([
       {
         $match: { "birthday": { $exists: true } } // Filter out documents without DateOfBirth
       },
@@ -94,7 +99,7 @@ export const getAllUsers = async (req, res) => {
           "age": {
             $floor: {
               $divide: [
-                { $subtract: [new Date(), "$DateOfBirth"] },
+                { $subtract: [new Date(), "$dateOfBirth"] },
                 31536000000 // Milliseconds in a year (365 days)
               ]
             }
@@ -104,7 +109,7 @@ export const getAllUsers = async (req, res) => {
       {
         $bucket: {
           groupBy: "$age",
-          boundaries: [8,18, 26, 36, 46], // Define your age ranges (adjust as needed)
+          boundaries: [13, 18, 23, 28, 33, 38], // Define your age ranges (adjust as needed)
           default: "Other", // Group any remaining ages
           output: {
             "count": { $sum: 1 }
@@ -112,19 +117,20 @@ export const getAllUsers = async (req, res) => {
         }
       },
       {
-        $group: {
-          _id: null,
-          ageGroups: { $push: { ageRange: "$_id", count: "$count" } }
-        }
-      },
-      {
         $project: {
           _id: 0,
-          ageGroups: 1
+          ageRange: {
+            $concat: [
+              { $toString: "$_id" },
+              " - ",
+              { $toString: { $add: ["$_id", 5] } } // Add 6 to get upper bound
+            ]
+          },
+          count: 1
         }
       }
     ]);
-    res.status(200).json(allUsers)
+    res.status(200).json({ usersAgeRange: userSegmentStat, allUsers, newUsersCount })
   }
   catch (err) {
     res.status(401).json({ error: err, message: `All users access failed ` });
