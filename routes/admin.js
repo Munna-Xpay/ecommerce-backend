@@ -2,7 +2,7 @@ import express from 'express';
 import { addSeller, deleteSeller, getAllSeller, getOneSeller, getSellersWithProducts, updateSeller } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
-import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
+import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsByFilter, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
@@ -85,4 +85,8 @@ router.get('/seller-category',jwtMiddleware,getSellerProductByCategory)
 
 //products grid
 router.get('/products-grid',jwtMiddleware,getProductsGrid)
+
+//products management
+router.get('/products-management',jwtMiddleware,getProductsByFilter)
+
 export default router

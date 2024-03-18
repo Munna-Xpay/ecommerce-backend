@@ -12,7 +12,7 @@ const storage =multer.diskStorage({
 
 //file filter (format of files)
 const fileFilter = (req, file, callback) => {
-    if (file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+    if (file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg' || file.mimetype == 'image/png' || file.mimetype == 'image/webp') {
         callback(null, true)
     }
     else {
