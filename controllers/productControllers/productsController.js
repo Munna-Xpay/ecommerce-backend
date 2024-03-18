@@ -3,15 +3,25 @@ import Product from '../../models/productsModel.js';
 //add product
 export const addProduct = async (req, res) => {
 
-    // const thumbnail = req.files.thumbnail[0].filename;
-    // const images = req.files.images.map((img) => img.filename)
-    // // console.log(thumbnail)
-    // // console.log(images)
+    //to split colors and save it as an array
+    if (req.body.colors) {
+        req.body.colors = req.body.colors.split(',').map(color => color.trim());
+    }
+    //to split colors and save it as an array
+    if (req.body.memory) {
+        req.body.memory = req.body.memory.split(',').map(item => item.trim());
+    }
     try {
         const newProduct = new Product(req.body);
-        // const newProduct = new Product({ ...req.body, thumbnail, images });
         await newProduct.save();
-        res.status(200).json(newProduct);
+        const products=await Product.aggregate([
+            {
+                $match:{
+                    category: { $in: ["Electronics", "Fashion","Groceries"] }
+                }
+            }   
+        ])
+        res.status(200).json(products)
     } catch (err) {
         res.status(500).json(err)
     }
@@ -101,6 +111,16 @@ export const getBrands = async (req, res) => {
             }
         ])
         res.status(200).json(allBrands);
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+//delete product permanently
+export const deleteProductPermanent = async (req, res) => {
+    try {
+        const disableProduct = await Product.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'product deleted successfully' });
     } catch (err) {
         res.status(500).json(err)
     }
