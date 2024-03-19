@@ -184,3 +184,41 @@ export const removeUser = async (req, res) => {
     res.status(401).json({ error: err, message: `User delete failed ` });
   }
 }
+
+//get conversion rate of users by years
+export const getConversionRate = async (req, res) => {
+  try {
+    const usersConversionRate = await Users.aggregate([
+      {
+        $addFields: {
+          year: { $year: "$registeredAt" }
+        }
+      },
+      {
+        $project: {
+          ordersCount: 1,
+          year: 1
+        }
+      },
+      {
+        $group: {
+          _id: '$year',
+          total_count: { $sum: 1 },
+          total_orders: { $sum: "$ordersCount" }
+        }
+      },
+      {
+        $sort: {
+          year: -1
+        }
+      },
+      {
+        $limit: 3
+      }
+    ])
+    res.status(200).json(usersConversionRate)
+  }
+  catch (err) {
+    res.status(401).json({ error: err, message: `User failed to fetch ` });
+  }
+}
