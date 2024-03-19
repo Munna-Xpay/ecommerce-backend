@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
@@ -7,9 +6,22 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     inStock: {
-        type: String,
+        type: Boolean,
         default: true
     },
+    stock:{
+        type:String,
+        required:true
+    },
+    stockQuantity:{
+        type:Number,
+        required:true
+    },
+    product_type:{
+        type:String,
+        required:true
+    }
+    ,
     about: {
         type: String,
         required: true
@@ -47,15 +59,15 @@ const productSchema = new mongoose.Schema({
     },
     warranty: {
         type: String,
-        required: true
+        default:""
     },
     ships_from: {
         type: String,
         required: true
     },
     description: {
-        type: Array,
-        default: []
+        type: String,
+        required:true
     },
     shipping: {
         type: String,

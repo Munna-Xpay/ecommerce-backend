@@ -1,6 +1,6 @@
 import express from 'express';
-import { addProduct, deleteProduct, getAllProducts, getBrands, getOneProduct, updateProduct } from '../controllers/productControllers/productsController.js';
-import { addReview, deleteReview, getAllReview, getOneReview, updateReview } from '../controllers/reviewController/reviewsController.js';
+import { addReview, deleteReview, getAllReview, getOneReview, getReviewStat, updateReview } from '../controllers/reviewController/reviewsController.js';
+import { addProduct, deleteProduct, deleteProductPermanent, getAllProducts, getBrands, getOneProduct, updateProduct } from '../controllers/productControllers/productsController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateProductRequest } from '../controllers/productControllers/validation/productValidation.js';
 import { validateReviewRequest } from '../controllers/reviewController/validation/reviewsValidation.js';
@@ -9,8 +9,10 @@ const router = express.Router();
 
 
 //add product route
-router.post('/add', addProduct);
-
+router.post('/add', jwtMiddleware, fileUploads.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'images', maxCount: 4 }
+  ]), addProduct);
 //get products route
 router.get('/get', getAllProducts);
 
@@ -26,10 +28,15 @@ router.put('/update/:id', jwtMiddleware, updateProduct);
 //delete product route
 router.delete('/delete/:id', deleteProduct);
 
+//delete product permanently
+router.delete('/delete-permanently/:id', deleteProductPermanent);
 
 
 //add review route
 router.post('/add-review', jwtMiddleware, validateReviewRequest, addReview);
+
+//get review stat route (admin)
+router.get('/get-review-stat', jwtMiddleware, getReviewStat);
 
 //get review route
 router.get('/get-review', getAllReview);

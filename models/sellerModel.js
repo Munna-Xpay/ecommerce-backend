@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const sellerSchema = new mongoose.Schema({
     fullName: {
         type: String,
-        required: true
+        default: ""
     },
     email: {
         type: String,
@@ -15,19 +15,24 @@ const sellerSchema = new mongoose.Schema({
         required: true
     },
     phoneNum: {
-        type: String
+        type: String,
+        default: ""
     },
     address: {
-        type: String
+        type: String,
+        required: true
     },
     zipCode: {
-        type: Number
+        type: Number,
+        default: ""
     },
     city: {
-        type: String
+        type: String,
+        default: ""
     },
     country: {
-        type: String
+        type: String,
+        required: true
     },
     company_name: {
         type: String,
@@ -35,7 +40,11 @@ const sellerSchema = new mongoose.Schema({
     },
     company_icon: {
         type: String,
-        default: ""
+        required: true
+    },
+    website: {
+        type: String,
+        required: true
     }
 }, { timestamps: true })
 

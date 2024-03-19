@@ -73,15 +73,64 @@ export const userProfileUpdate = async (req, res) => {
 
 
 //get all users
-export const getAllUsers = async (req, res) => {
+export const getAllUsersWithStat = async (req, res) => {
+  const currentDate = new Date();
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - 30);
   try {
     const allUsers = await Users.find()
-    if (allUsers) {
-      res.status(200).json(allUsers)
-    }
-    else {
-      res.status(404).json("Users empty")
-    }
+    const newUsersCount = (await Users.find({ registeredAt: { $gte: startDate, $lt: currentDate } })).length
+    const userSegmentStat = await Users.aggregate([
+      {
+        $match: { "birthday": { $exists: true } } // Filter out documents without DateOfBirth
+      },
+      {
+        $project: {
+          "dateOfBirth": {
+            $dateFromString: {
+              dateString: "$birthday",
+              format: "%Y-%m-%d" // Specify the format
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          "age": {
+            $floor: {
+              $divide: [
+                { $subtract: [new Date(), "$dateOfBirth"] },
+                31536000000 // Milliseconds in a year (365 days)
+              ]
+            }
+          }
+        }
+      },
+      {
+        $bucket: {
+          groupBy: "$age",
+          boundaries: [13, 18, 23, 28, 33, 38], // Define your age ranges (adjust as needed)
+          default: "Other", // Group any remaining ages
+          output: {
+            "count": { $sum: 1 }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          ageRange: {
+            $concat: [
+              { $toString: "$_id" },
+              " - ",
+              { $toString: { $add: ["$_id", 5] } } // Add 6 to get upper bound
+            ]
+          },
+          count: 1
+        }
+      }
+    ]);
+    res.status(200).json({ usersAgeRange: userSegmentStat, allUsers, newUsersCount })
   }
   catch (err) {
     res.status(401).json({ error: err, message: `All users access failed ` });
@@ -110,7 +159,7 @@ export const getUserById = async (req, res) => {
 
 //update user profile picture
 export const updateProfilePicture = async (req, res) => {
-  console.log("ggggggggg")
+  // console.log("ggggggggg")
   const { id } = req.params
   const profileImage = req.file.filename
   console.log(profileImage)

@@ -1,26 +1,30 @@
 import express from 'express';
-import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, updateSeller } from '../controllers/sellerController/sellerController.js';
+import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updateSeller } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
-import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
+import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsByFilter, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
 import { getOrdersAndIncomeOfThisYear, getPeriodSalesRevenue, getSalesActivity, updateOrder } from '../controllers/ordersValidation/ordersController.js';
+import fileUploads from '../middlewares/multerMiddleware.js';
 
 const router = express.Router();
 
 //add seller route
-router.post('/add-seller', jwtMiddleware, validateSellerRequest, addSeller);
+router.post('/add-seller', jwtMiddleware, fileUploads.single("company_icon"), validateSellerRequest, addSeller);
 
 //get seller route
 router.get('/get-seller', getAllSeller);
+
+//get seller review stat route
+router.get('/get-seller-review-stat', jwtMiddleware, getSellerReviewStat);
 
 //get one seller route
 router.get('/get-one-seller/:id', jwtMiddleware, getOneSeller);
 
 //update seller route
-router.put('/update-seller/:id', jwtMiddleware, updateSeller);
+router.put('/update-seller/:id', jwtMiddleware, fileUploads.single("company_icon"), updateSeller);
 
 //delete seller route
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
@@ -60,11 +64,11 @@ router.put('/update-coupon/:id', jwtMiddleware, updateCoupon);
 router.delete('/delete-coupon/:id', jwtMiddleware, deleteCoupon);
 
 
-
-router.get('/get-orders-by-month', getOrdersAndIncomeOfThisYear)
+//get order stat by month
+router.get('/get-orders-by-month', jwtMiddleware, getOrdersAndIncomeOfThisYear)
 
 //get income stat of a particular seller
-router.get('/get-income-seller', getIncomeStatOfAParticularSeller)
+router.get('/get-income-seller', jwtMiddleware, getIncomeStatOfAParticularSeller)
 
 router.put('/update-orders/:id', updateOrder)
 
@@ -82,9 +86,12 @@ router.get('/seller-category', jwtMiddleware, getSellerProductByCategory)
 router.get('/products-grid', jwtMiddleware, getProductsGrid)
 
 //get sales activity route
-router.get('/get-sales-activity', getSalesActivity)
+router.get('/get-sales-activity', jwtMiddleware, getSalesActivity)
 
 //get sales activity route
-router.get('/get-period-sales-revenue', getPeriodSalesRevenue)
+router.get('/get-period-sales-revenue', jwtMiddleware, getPeriodSalesRevenue)
+
+//products management
+router.get('/products-management',jwtMiddleware,getProductsByFilter)
 
 export default router

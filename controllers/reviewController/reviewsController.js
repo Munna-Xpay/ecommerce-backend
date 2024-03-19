@@ -58,3 +58,56 @@ export const deleteReview = async (req, res) => {
         res.status(500).json(err)
     }
 }
+
+
+//get review stat
+export const getReviewStat = async (req, res) => {
+    let sortBy = { createdAt: -1 };
+    if (req.query.recent) {
+        sortBy.createdAt = -1
+    } else if (req.query.oldest) {
+        sortBy = { createdAt: 1 }
+    } else if (req.query.lowest_rating) {
+        sortBy = { review_stars: 1 }
+    } else if (req.query.highest_rating) {
+        sortBy = { review_stars: -1 }
+    }
+
+    try {
+        const reviewStat = await Review.aggregate([
+            {
+                $group: {
+                    _id: "$review_stars",
+                    total_review: { $sum: 1 },
+                    // docs: { $push: "$$ROOT" }
+                },
+            },
+            {
+                $project: {
+                    rate: "$_id",
+                    total_review: 1
+                }
+            },
+            {
+                $sort: { total_review: 1 }
+            }
+        ]);
+
+        const avg_review = await Review.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    avg_review: { $avg: "$review_stars" },
+                },
+            }
+        ]);
+
+        const all_reviews = await Review.find().populate("reviewFrom").sort(sortBy)
+
+        res.status(200).json({ review_stat: reviewStat, all_reviews, avg_review: avg_review[0].avg_review });
+    }
+    catch (err) {
+        res.status(401).json({ error: err, message: 'Failed to fetch seller review stat' })
+    }
+}
+

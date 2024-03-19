@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllUsers, getUserById, login, register, removeUser, updateProfilePicture, userProfileUpdate } from '../controllers/usersController/usersController.js';
+import { getAllUsersWithStat, getUserById, login, register, removeUser, updateProfilePicture, userProfileUpdate } from '../controllers/usersController/usersController.js';
 import fileUploads from '../middlewares/multerMiddleware.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { addToCart, cartProducts, changeCartQuantity, decrementCartQty, deleteCartProduct, incrementCartQty } from '../controllers/cartControllers/cartController.js';
@@ -29,7 +29,7 @@ router.put('/update-profile-picture/:id', jwtMiddleware, fileUploads.single('pro
 
 
 //all users
-router.get('/all-users', jwtMiddleware, getAllUsers)
+router.get('/all-users-with-stat', jwtMiddleware, getAllUsersWithStat)
 
 //get user by id
 router.get('/user/:_id', getUserById)
