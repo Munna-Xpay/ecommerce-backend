@@ -72,7 +72,7 @@ export const userProfileUpdate = async (req, res) => {
 
 
 
-//get all users
+//get all users with stat
 export const getAllUsersWithStat = async (req, res) => {
   const currentDate = new Date();
   const startDate = new Date(currentDate);
@@ -137,6 +137,28 @@ export const getAllUsersWithStat = async (req, res) => {
 
   }
 }
+//get all users
+export const getAllUsers = async (req, res) => {
+
+  let sortBy = { registeredAt: 1 };
+  if (req.query.registered_asc) {
+    sortBy.registeredAt = 1
+  } else if (req.query.registered_des) {
+    sortBy = { registeredAt: -1 }
+  } else if (req.query.A_to_Z) {
+    sortBy = { fullName: 1 }
+  } else if (req.query.Z_to_A) {
+    sortBy = { fullName: -1 }
+  }
+  // console.log(sortBy)
+  try {
+    const allUsers = await Users.find().sort(sortBy)
+    res.status(200).json(allUsers)
+  }
+  catch (err) {
+    res.status(401).json({ error: err, message: `All users access failed ` });
+  }
+}
 
 
 export const getUserById = async (req, res) => {
@@ -182,5 +204,43 @@ export const removeUser = async (req, res) => {
   }
   catch (err) {
     res.status(401).json({ error: err, message: `User delete failed ` });
+  }
+}
+
+//get conversion rate of users by years
+export const getConversionRate = async (req, res) => {
+  try {
+    const usersConversionRate = await Users.aggregate([
+      {
+        $addFields: {
+          year: { $year: "$registeredAt" }
+        }
+      },
+      {
+        $project: {
+          ordersCount: 1,
+          year: 1
+        }
+      },
+      {
+        $group: {
+          _id: '$year',
+          total_count: { $sum: 1 },
+          total_orders: { $sum: "$ordersCount" }
+        }
+      },
+      {
+        $sort: {
+          _id: -1
+        }
+      },
+      {
+        $limit: 3
+      }
+    ])
+    res.status(200).json(usersConversionRate)
+  }
+  catch (err) {
+    res.status(401).json({ error: err, message: `User failed to fetch ` });
   }
 }
