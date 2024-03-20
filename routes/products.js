@@ -1,6 +1,6 @@
 import express from 'express';
 import { addReview, deleteReview, getAllReview, getOneReview, getReviewStat, updateReview } from '../controllers/reviewController/reviewsController.js';
-import { addProduct, deleteProduct, deleteProductPermanent, getAllProducts, getBrands, getOneProduct, updateProduct } from '../controllers/productControllers/productsController.js';
+import { addProduct, deleteProduct, deleteProductPermanent, getAllProducts, getBrands, getOneProduct, productImageUpdate, updateProduct } from '../controllers/productControllers/productsController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateProductRequest } from '../controllers/productControllers/validation/productValidation.js';
 import { validateReviewRequest } from '../controllers/reviewController/validation/reviewsValidation.js';
@@ -24,6 +24,12 @@ router.get('/get-one/:id', getOneProduct);
 
 //update product route
 router.put('/update/:id', jwtMiddleware, updateProduct);
+
+//update product images
+router.put('/product-image-update/:id',jwtMiddleware,fileUploads.fields([
+  { name: 'thumbnail', maxCount: 1 },
+  { name: 'images', maxCount: 4 }
+]),productImageUpdate)
 
 //delete product route
 router.delete('/delete/:id', deleteProduct);
