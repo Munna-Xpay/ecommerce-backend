@@ -6,14 +6,6 @@ export const addProduct = async (req, res) => {
   // console.log(req.files);
   const thumbnail = req.files.thumbnail[0].filename;
   const images = req.files.images.map((i) => i.filename);
-  //to split colors and save it as an array
-  if (req.body.colors) {
-    req.body.colors = req.body.colors.split(",").map((color) => color.trim());
-  }
-  //to split colors and save it as an array
-  if (req.body.memory) {
-    req.body.memory = req.body.memory.split(",").map((item) => item.trim());
-  }
   try {
     const newProduct = new Product({ ...req.body, thumbnail, images });
     await newProduct.save();
@@ -120,12 +112,23 @@ export const productImageUpdate = async (req, res) => {
   try {
     console.log(req.files);
     console.log(req.body);
-    const thumbnail = req.files.thumbnail?req.files.thumbnail[0].filename : req.body.thumbnail;
-    const images = req.files.images.map((i) => req.body.images.push(i.filename)) 
-console.log(req.body.images);
-    const product = await Product.findByIdAndUpdate(req.params.id,  {...req.body, thumbnail: thumbnail},
-      { new: true }
-    );
+    
+    const thumbnail = req.files.thumbnail ? req.files.thumbnail[0].filename : req.body.thumbnail;
+    // Get image filenames
+    let images = req.body.images || [];
+
+    // If images is not an array, convert it to an array
+    if (!Array.isArray(images)) {
+      images = [images];
+    }
+    // If req.files.images exists, push new image filenames to the array
+    if (req.files.images) {
+      req.files.images.map((file) => {
+        images.push(file.filename);
+      });
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, { thumbnail: thumbnail, images: images }, { new: true });
 
     const products = await Product.aggregate([
       {
@@ -133,13 +136,16 @@ console.log(req.body.images);
           category: { $in: ["Electronics", "Fashion", "Groceries"] },
         },
       }
-    ]);n
+    ]);
 
+    // Send response with updated products
     res.status(200).json(products);
   } catch (err) {
+  
     res.status(500).json(err);
   }
 };
+
 
 
 
