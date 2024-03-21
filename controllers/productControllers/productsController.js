@@ -120,10 +120,10 @@ export const productImageUpdate = async (req, res) => {
   try {
     console.log(req.files);
     console.log(req.body);
-    const thumbnail = req.files.thumbnail?req.files.thumbnail[0].filename : req.body.thumbnail;
-    const images = req.files.images.map((i) => req.body.images.push(i.filename)) 
-console.log(req.body.images);
-    const product = await Product.findByIdAndUpdate(req.params.id,  {...req.body, thumbnail: thumbnail},
+    const thumbnail = req.files.thumbnail ? req.files.thumbnail[0].filename : req.body.thumbnail;
+    const images = req.files.images.map((i) => req.body.images.push(i.filename))
+    console.log(req.body.images);
+    const product = await Product.findByIdAndUpdate(req.params.id, { ...req.body, thumbnail: thumbnail },
       { new: true }
     );
 
@@ -133,7 +133,7 @@ console.log(req.body.images);
           category: { $in: ["Electronics", "Fashion", "Groceries"] },
         },
       }
-    ]);n
+    ]); n
 
     res.status(200).json(products);
   } catch (err) {
@@ -169,6 +169,23 @@ export const getBrands = async (req, res) => {
       },
     ]);
     res.status(200).json(allBrands);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+//get all categories from all document
+
+export const getCategories = async (req, res) => {
+  try {
+    const allCategories = await Product.aggregate([
+      {
+        $group: {
+          _id: "$category",
+        },
+      },
+    ]);
+    res.status(200).json(allCategories);
   } catch (err) {
     res.status(500).json(err);
   }
