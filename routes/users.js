@@ -6,7 +6,7 @@ import { addToCart, cartProducts, changeCartQuantity, decrementCartQty, deleteCa
 import { addToWishlist, deleteWishlistProduct, getWishlistProducts } from '../controllers/wishlistController/wishlistController.js';
 import { validateCartRequest } from '../controllers/cartControllers/validation/cartValidation.js';
 import { validateWishlistRequest } from '../controllers/wishlistController/validation/wishlistValidation.js';
-import { allOrders, cancelOrder, deleteOrder, orderDetails, userOrder } from '../controllers/ordersValidation/ordersController.js';
+import { allOrders, cancelOrder, deleteOrder, getOrderByCategory, orderDetails, updateOrder, userOrder } from '../controllers/ordersValidation/ordersController.js';
 import { validateOrderRequest } from '../controllers/ordersValidation/validation/ordersValidation.js';
 import { validateUserLoginRequest } from '../controllers/usersController/validation/userLoginValidation.js';
 import { validateUserRegisterRequest } from '../controllers/usersController/validation/usersValidation.js'
@@ -93,5 +93,12 @@ router.delete('/delete-orders/:id', jwtMiddleware, deleteOrder)
 
 //Cancel order
 router.put('/cancel-order/:id', jwtMiddleware, cancelOrder)
+
+//update order
+router.put('/update-order/:id', jwtMiddleware, updateOrder)
+
+//order by category
+router.get('/get-orders', jwtMiddleware,getOrderByCategory)
+
 
 export default router
