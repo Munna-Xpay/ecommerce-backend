@@ -1,4 +1,5 @@
 import Seller from '../../models/sellerModel.js';
+import nodemailer from 'nodemailer'
 
 //add seller
 export const addSeller = async (req, res) => {
@@ -7,6 +8,37 @@ export const addSeller = async (req, res) => {
     try {
         const newSeller = new Seller(req.body);
         await newSeller.save();
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "ksabhishek32@gmail.com", // Your Gmail address
+                pass: "zeer tpde nlqk vjsu", // Use the generated app password
+            },
+        });
+
+        // Define your email details
+        const mailOptions = {
+            from: "admin@gmail.com",
+            to: [
+                "ksabhishek32@gmail.com",
+                "midhunzz017@gmail.com",
+            ],
+            subject: "Account password",
+            html: `
+                <h1>Welcome ${req.body.company_name} to our community <br/> your account created by admin .<br> <h3>Your E-commerse app login password : ${req.body.password}</h1>
+                <img src="https://shop-point.merku.love/assets/logo_light-33bb10d5.svg" alt="Embedded Logo" style="width: 200px;height:200px;object-fit:contain">
+            `,
+        };
+
+        // Send the email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+            } else {
+                console.log("Email sent successfully:", info.response);
+            }
+        });
 
         const IncomeStatOfSellersWithNewOne = await Seller.aggregate([
             {

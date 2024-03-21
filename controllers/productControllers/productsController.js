@@ -127,8 +127,9 @@ export const productImageUpdate = async (req, res) => {
         images.push(file.filename);
       });
     }
-
-    const product = await Product.findByIdAndUpdate(req.params.id, { thumbnail: thumbnail, images: images }, { new: true });
+    const product = await Product.findByIdAndUpdate(req.params.id, { ...req.body, thumbnail: thumbnail },
+      { new: true }
+    );
 
     const products = await Product.aggregate([
       {
@@ -137,11 +138,8 @@ export const productImageUpdate = async (req, res) => {
         },
       }
     ]);
-
-    // Send response with updated products
     res.status(200).json(products);
   } catch (err) {
-  
     res.status(500).json(err);
   }
 };
@@ -175,6 +173,23 @@ export const getBrands = async (req, res) => {
       },
     ]);
     res.status(200).json(allBrands);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+//get all categories from all document
+
+export const getCategories = async (req, res) => {
+  try {
+    const allCategories = await Product.aggregate([
+      {
+        $group: {
+          _id: "$category",
+        },
+      },
+    ]);
+    res.status(200).json(allCategories);
   } catch (err) {
     res.status(500).json(err);
   }

@@ -1,6 +1,6 @@
 import express from 'express';
 import { addReview, deleteReview, getAllReview, getOneReview, getReviewStat, updateReview } from '../controllers/reviewController/reviewsController.js';
-import { addProduct, deleteProduct, deleteProductPermanent, getAllProducts, getBrands, getOneProduct, productImageUpdate, updateProduct } from '../controllers/productControllers/productsController.js';
+import { addProduct, deleteProduct, deleteProductPermanent, getAllProducts, getBrands, getCategories, getOneProduct, productImageUpdate, updateProduct } from '../controllers/productControllers/productsController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateProductRequest } from '../controllers/productControllers/validation/productValidation.js';
 import { validateReviewRequest } from '../controllers/reviewController/validation/reviewsValidation.js';
@@ -10,14 +10,17 @@ const router = express.Router();
 
 //add product route
 router.post('/add', jwtMiddleware, fileUploads.fields([
-    { name: 'thumbnail', maxCount: 1 },
-    { name: 'images', maxCount: 4 }
-  ]), addProduct);
+  { name: 'thumbnail', maxCount: 1 },
+  { name: 'images', maxCount: 4 }
+]), addProduct);
 //get products route
 router.get('/get', getAllProducts);
 
 //get brands route
 router.get('/get-brands', getBrands);
+
+//get category route
+router.get('/get-category', getCategories);
 
 //get one product route
 router.get('/get-one/:id', getOneProduct);
@@ -26,10 +29,10 @@ router.get('/get-one/:id', getOneProduct);
 router.put('/update/:id', jwtMiddleware, updateProduct);
 
 //update product images
-router.put('/product-image-update/:id',jwtMiddleware,fileUploads.fields([
+router.put('/product-image-update/:id', jwtMiddleware, fileUploads.fields([
   { name: 'thumbnail', maxCount: 1 },
   { name: 'images', maxCount: 4 }
-]),productImageUpdate)
+]), productImageUpdate)
 
 //delete product route
 router.delete('/delete/:id', deleteProduct);
