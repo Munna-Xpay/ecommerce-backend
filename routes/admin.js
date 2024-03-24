@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updateSeller } from '../controllers/sellerController/sellerController.js';
+import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updateSeller, updateSellerCompanyIcon } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
 import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsByFilter, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
@@ -26,7 +26,10 @@ router.get('/get-seller-review-stat', jwtMiddleware, getSellerReviewStat);
 router.get('/get-one-seller/:id', jwtMiddleware, getOneSeller);
 
 //update seller route
-router.put('/update-seller/:id', jwtMiddleware, fileUploads.single("company_icon"), updateSeller);
+router.put('/update-seller/:id', jwtMiddleware, updateSeller);
+
+//update seller company icon route
+router.put('/update-seller-company-icon/:id', jwtMiddleware, fileUploads.single("company_icon"), updateSellerCompanyIcon);
 
 //delete seller route
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);

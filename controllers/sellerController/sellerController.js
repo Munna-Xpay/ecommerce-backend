@@ -115,7 +115,17 @@ export const getOneSeller = async (req, res) => {
 
 //update seller
 export const updateSeller = async (req, res) => {
-    req.body.company_icon = req.file.filename;
+    try {
+        const seller = await Seller.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        res.status(200).json(seller);
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+//update seller company icon
+export const updateSellerCompanyIcon = async (req, res) => {
+    req.body.company_icon = req.file.filename
     try {
         const seller = await Seller.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         res.status(200).json(seller);
