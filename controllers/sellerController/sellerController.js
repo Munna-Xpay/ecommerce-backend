@@ -147,9 +147,11 @@ export const deleteSeller = async (req, res) => {
 //get income stat of a particular seller
 export const getIncomeStatOfAParticularSeller = async (req, res) => {
 
-    let sortBy = { total_orders: -1 };
-    if (req.query.bestSelling) {
-        sortBy.total_orders = -1
+    let sortBy = { "seller.createdAt": -1 };
+    if (req.query.latest) {
+        sortBy = { "seller.createdAt": -1 }
+    } else if (req.query.bestSelling) {
+        sortBy = { total_orders: -1 }
     } else if (req.query.highest_rating) {
         sortBy = { avg_rating: -1 }
     } else if (req.query.lowest_rating) {
@@ -159,7 +161,7 @@ export const getIncomeStatOfAParticularSeller = async (req, res) => {
     } else if (req.query.Z_to_A) {
         sortBy = { "seller.company_name": -1 }
     }
-
+    console.log(sortBy)
     try {
         const IncomeStatOfAParticularSeller = await Seller.aggregate([
             {
