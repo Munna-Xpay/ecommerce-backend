@@ -72,7 +72,8 @@ router.get('/get-orders-by-month', jwtMiddleware, getOrdersAndIncomeOfThisYear)
 //get income stat of a particular seller
 router.get('/get-income-seller', jwtMiddleware, getIncomeStatOfAParticularSeller)
 
-router.put('/update-orders/:id', updateOrder)
+//update order
+router.put('/update-order/:id',jwtMiddleware, updateOrder)
 
 
 //get price by category
