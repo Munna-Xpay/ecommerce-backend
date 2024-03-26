@@ -8,7 +8,7 @@ const notifySchema = new mongoose.Schema({
     },
     userProPic: {
         type: String,
-        required: true
+        default: ""
     },
     notifyMsg: {
         type: String,

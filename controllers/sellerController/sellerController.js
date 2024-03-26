@@ -1,4 +1,5 @@
 import Seller from '../../models/sellerModel.js';
+import nodemailer from 'nodemailer'
 
 //add seller
 export const addSeller = async (req, res) => {
@@ -7,6 +8,37 @@ export const addSeller = async (req, res) => {
     try {
         const newSeller = new Seller(req.body);
         await newSeller.save();
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "ksabhishek32@gmail.com", // Your Gmail address
+                pass: "zeer tpde nlqk vjsu", // Use the generated app password
+            },
+        });
+
+        // Define your email details
+        const mailOptions = {
+            from: "admin@gmail.com",
+            to: [
+                "ksabhishek32@gmail.com",
+                "midhunzz017@gmail.com",
+            ],
+            subject: "Account password",
+            html: `
+                <h1>Welcome ${req.body.company_name} to our community <br/> your account created by admin .<br> <h3>Your E-commerse app login password : ${req.body.password}</h1>
+                <img src="https://shop-point.merku.love/assets/logo_light-33bb10d5.svg" alt="Embedded Logo" style="width: 200px;height:200px;object-fit:contain">
+            `,
+        };
+
+        // Send the email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+            } else {
+                console.log("Email sent successfully:", info.response);
+            }
+        });
 
         const IncomeStatOfSellersWithNewOne = await Seller.aggregate([
             {
@@ -83,7 +115,17 @@ export const getOneSeller = async (req, res) => {
 
 //update seller
 export const updateSeller = async (req, res) => {
-    req.body.company_icon = req.file.filename;
+    try {
+        const seller = await Seller.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        res.status(200).json(seller);
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+//update seller company icon
+export const updateSellerCompanyIcon = async (req, res) => {
+    req.body.company_icon = req.file.filename
     try {
         const seller = await Seller.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         res.status(200).json(seller);
@@ -105,9 +147,11 @@ export const deleteSeller = async (req, res) => {
 //get income stat of a particular seller
 export const getIncomeStatOfAParticularSeller = async (req, res) => {
 
-    let sortBy = { total_orders: -1 };
-    if (req.query.bestSelling) {
-        sortBy.total_orders = -1
+    let sortBy = { "seller.createdAt": -1 };
+    if (req.query.latest) {
+        sortBy = { "seller.createdAt": -1 }
+    } else if (req.query.bestSelling) {
+        sortBy = { total_orders: -1 }
     } else if (req.query.highest_rating) {
         sortBy = { avg_rating: -1 }
     } else if (req.query.lowest_rating) {
@@ -117,7 +161,7 @@ export const getIncomeStatOfAParticularSeller = async (req, res) => {
     } else if (req.query.Z_to_A) {
         sortBy = { "seller.company_name": -1 }
     }
-
+    console.log(sortBy)
     try {
         const IncomeStatOfAParticularSeller = await Seller.aggregate([
             {

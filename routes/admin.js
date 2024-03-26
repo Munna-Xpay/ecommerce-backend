@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updateSeller } from '../controllers/sellerController/sellerController.js';
+import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updateSeller, updateSellerCompanyIcon } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
 import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsByFilter, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
@@ -8,6 +8,8 @@ import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoup
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
 import { getOrdersAndIncomeOfThisYear, getPeriodSalesRevenue, getSalesActivity, updateOrder } from '../controllers/ordersValidation/ordersController.js';
 import fileUploads from '../middlewares/multerMiddleware.js';
+import { addNotification, getAllNotification, updateNotification } from '../controllers/notificationController/notificationController.js';
+import { validateNotificationRequest } from '../controllers/notificationController/validation/notificationValidation.js';
 
 const router = express.Router();
 
@@ -24,7 +26,10 @@ router.get('/get-seller-review-stat', jwtMiddleware, getSellerReviewStat);
 router.get('/get-one-seller/:id', jwtMiddleware, getOneSeller);
 
 //update seller route
-router.put('/update-seller/:id', jwtMiddleware, fileUploads.single("company_icon"), updateSeller);
+router.put('/update-seller/:id', jwtMiddleware, updateSeller);
+
+//update seller company icon route
+router.put('/update-seller-company-icon/:id', jwtMiddleware, fileUploads.single("company_icon"), updateSellerCompanyIcon);
 
 //delete seller route
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
@@ -92,6 +97,16 @@ router.get('/get-sales-activity', jwtMiddleware, getSalesActivity)
 router.get('/get-period-sales-revenue', jwtMiddleware, getPeriodSalesRevenue)
 
 //products management
-router.get('/products-management',jwtMiddleware,getProductsByFilter)
+router.get('/products-management', jwtMiddleware, getProductsByFilter)
+
+
+//add notification route
+router.post('/add-notification', jwtMiddleware, validateNotificationRequest, addNotification);
+
+//get notification route
+router.get('/get-notification', jwtMiddleware, getAllNotification);
+
+//update notification route
+router.put('/update-notification/:id', jwtMiddleware, updateNotification);
 
 export default router
