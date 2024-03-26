@@ -45,6 +45,10 @@ const sellerSchema = new mongoose.Schema({
     website: {
         type: String,
         required: true
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true })
 

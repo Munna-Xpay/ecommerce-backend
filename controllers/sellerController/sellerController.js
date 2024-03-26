@@ -1,10 +1,14 @@
 import Seller from '../../models/sellerModel.js';
 import nodemailer from 'nodemailer'
+import bcrypt from "bcrypt";
+
 
 //add seller
 export const addSeller = async (req, res) => {
     console.log(req.file.filename)
     req.body.company_icon = req.file.filename
+    const hashedPass = await bcrypt.hash(req.body.password, 10);
+    req.body.password = hashedPass
     try {
         const newSeller = new Seller(req.body);
         await newSeller.save();
@@ -115,7 +119,17 @@ export const getOneSeller = async (req, res) => {
 
 //update seller
 export const updateSeller = async (req, res) => {
-    req.body.company_icon = req.file.filename;
+    try {
+        const seller = await Seller.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        res.status(200).json(seller);
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+//update seller company icon
+export const updateSellerCompanyIcon = async (req, res) => {
+    req.body.company_icon = req.file.filename
     try {
         const seller = await Seller.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         res.status(200).json(seller);
@@ -137,9 +151,11 @@ export const deleteSeller = async (req, res) => {
 //get income stat of a particular seller
 export const getIncomeStatOfAParticularSeller = async (req, res) => {
 
-    let sortBy = { total_orders: -1 };
-    if (req.query.bestSelling) {
-        sortBy.total_orders = -1
+    let sortBy = { "seller.createdAt": -1 };
+    if (req.query.latest) {
+        sortBy = { "seller.createdAt": -1 }
+    } else if (req.query.bestSelling) {
+        sortBy = { total_orders: -1 }
     } else if (req.query.highest_rating) {
         sortBy = { avg_rating: -1 }
     } else if (req.query.lowest_rating) {
@@ -149,7 +165,7 @@ export const getIncomeStatOfAParticularSeller = async (req, res) => {
     } else if (req.query.Z_to_A) {
         sortBy = { "seller.company_name": -1 }
     }
-
+    console.log(sortBy)
     try {
         const IncomeStatOfAParticularSeller = await Seller.aggregate([
             {
@@ -296,5 +312,16 @@ export const getSellerReviewStat = async (req, res) => {
     }
     catch (err) {
         res.status(401).json({ error: err, message: 'Failed to fetch seller review stat' })
+    }
+}
+
+//update seller password
+export const updatePassword = async (req, res) => {
+    try {
+        const hashedPass = await bcrypt.hash(req.body.password, 10);
+        const updatedPassword = await Seller.findByIdAndUpdate(req.params.id, { $set: { password: hashedPass } }, { new: true });
+        res.status(200).json(updatedPassword);
+    } catch (err) {
+        res.status(500).json(err)
     }
 }

@@ -112,7 +112,6 @@ export const productImageUpdate = async (req, res) => {
   try {
     console.log(req.files);
     console.log(req.body);
-    
     const thumbnail = req.files.thumbnail ? req.files.thumbnail[0].filename : req.body.thumbnail;
     // Get image filenames
     let images = req.body.images || [];
@@ -127,10 +126,7 @@ export const productImageUpdate = async (req, res) => {
         images.push(file.filename);
       });
     }
-    const product = await Product.findByIdAndUpdate(req.params.id, { ...req.body, thumbnail: thumbnail },
-      { new: true }
-    );
-
+    const product = await Product.findByIdAndUpdate(req.params.id, { thumbnail: thumbnail, images: images }, { new: true });
     const products = await Product.aggregate([
       {
         $match: {
