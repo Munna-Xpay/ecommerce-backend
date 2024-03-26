@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updateSeller, updateSellerCompanyIcon } from '../controllers/sellerController/sellerController.js';
+import { addSeller, deleteSeller, getAllSeller, getIncomeStatOfAParticularSeller, getOneSeller, getSellerReviewStat, updatePassword, updateSeller, updateSellerCompanyIcon } from '../controllers/sellerController/sellerController.js';
 import { jwtMiddleware } from '../middlewares/jwtMiddleware.js';
 import { validateSellerRequest } from '../controllers/sellerController/validation/sellerValidation.js';
 import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPriceByCategory, getProductsByCategory, getProductsByFilter, getProductsGrid, getSellerProductByCategory, updateCategory } from '../controllers/categoryController/categoryControllers.js';
@@ -33,6 +33,9 @@ router.put('/update-seller-company-icon/:id', jwtMiddleware, fileUploads.single(
 
 //delete seller route
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
+
+//edit seller password route
+router.put('/update-password-seller/:id', updatePassword);
 
 
 
@@ -75,7 +78,8 @@ router.get('/get-orders-by-month', jwtMiddleware, getOrdersAndIncomeOfThisYear)
 //get income stat of a particular seller
 router.get('/get-income-seller', jwtMiddleware, getIncomeStatOfAParticularSeller)
 
-router.put('/update-orders/:id', updateOrder)
+//update order
+router.put('/update-order/:id',jwtMiddleware, updateOrder)
 
 
 //get price by category

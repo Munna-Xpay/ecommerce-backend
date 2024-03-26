@@ -62,7 +62,7 @@ export const getPriceByCategory = async (req, res) => {
       {
         $group: {
           _id: "$category",
-          total_price: { $sum: "$discounted_price" },
+          total_price: { $sum: { $multiply: ["$product_sold", "$discounted_price"] } },
         },
       },
     ]);
@@ -78,7 +78,7 @@ export const getProductsByCategory = async (req, res) => {
     const products = await Product.aggregate([
       {
         $match: {
-          category: { $in: ["Electronics", "Fashion", "Groceries"] },
+          category: { $in: ["Electronics", "Fashion", "Groceries"] },isActive:true
         },
       },
     ]);

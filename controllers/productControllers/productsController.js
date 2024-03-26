@@ -112,7 +112,6 @@ export const productImageUpdate = async (req, res) => {
   try {
     console.log(req.files);
     console.log(req.body);
-
     const thumbnail = req.files.thumbnail ? req.files.thumbnail[0].filename : req.body.thumbnail;
     // Get image filenames
     let images = req.body.images || [];
@@ -128,7 +127,10 @@ export const productImageUpdate = async (req, res) => {
       });
     }
 
+
     const product = await Product.findByIdAndUpdate(req.params.id, { thumbnail: thumbnail, images: images }, { new: true });
+
+
 
     const products = await Product.aggregate([
       {
@@ -137,10 +139,8 @@ export const productImageUpdate = async (req, res) => {
         },
       }
     ]);
-    // Send response with updated products
     res.status(200).json(products);
   } catch (err) {
-
     res.status(500).json(err);
   }
 };
