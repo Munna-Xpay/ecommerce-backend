@@ -126,6 +126,7 @@ export const productImageUpdate = async (req, res) => {
         images.push(file.filename);
       });
     }
+    
     const product = await Product.findByIdAndUpdate(req.params.id, { thumbnail: thumbnail, images: images }, { new: true });
     const products = await Product.aggregate([
       {
