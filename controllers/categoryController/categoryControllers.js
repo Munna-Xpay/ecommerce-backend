@@ -78,7 +78,7 @@ export const getProductsByCategory = async (req, res) => {
     const products = await Product.aggregate([
       {
         $match: {
-          category: { $in: ["Electronics", "Fashion", "Groceries"] },
+          category: { $in: ["Electronics", "Fashion", "Groceries"] },isActive:true
         },
       },
     ]);
