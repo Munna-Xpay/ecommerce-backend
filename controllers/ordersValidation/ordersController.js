@@ -136,7 +136,11 @@ export const cancelOrder = async (req, res) => {
 export const updateOrder = async (req, res) => {
     try {
         const updatedOrder = await Order.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
-        res.status(200).json(updatedOrder)
+        const userOrderDetails = await Order.aggregate([
+            { $unwind: "$products" }
+        ]);
+
+        res.status(200).json(userOrderDetails);
     }
     catch (err) {
         res.status(401).json({ error: err, message: 'Orders details update failed' })
@@ -349,3 +353,5 @@ export const getOrderByCategory = async (req, res) => {
         res.status(401).json({ error: err, message: 'Orders access failed' });
     }
 };
+
+
