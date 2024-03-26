@@ -1,10 +1,14 @@
 import Seller from '../../models/sellerModel.js';
 import nodemailer from 'nodemailer'
+import bcrypt from "bcrypt";
+
 
 //add seller
 export const addSeller = async (req, res) => {
     console.log(req.file.filename)
     req.body.company_icon = req.file.filename
+    const hashedPass = await bcrypt.hash(req.body.password, 10);
+    req.body.password = hashedPass
     try {
         const newSeller = new Seller(req.body);
         await newSeller.save();
@@ -308,5 +312,16 @@ export const getSellerReviewStat = async (req, res) => {
     }
     catch (err) {
         res.status(401).json({ error: err, message: 'Failed to fetch seller review stat' })
+    }
+}
+
+//update seller password
+export const updatePassword = async (req, res) => {
+    try {
+        const hashedPass = await bcrypt.hash(req.body.password, 10);
+        const updatedPassword = await Seller.findByIdAndUpdate(req.params.id, { $set: { password: hashedPass } }, { new: true });
+        res.status(200).json(updatedPassword);
+    } catch (err) {
+        res.status(500).json(err)
     }
 }
