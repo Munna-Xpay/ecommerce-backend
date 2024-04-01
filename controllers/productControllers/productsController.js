@@ -2,12 +2,15 @@ import Product from "../../models/productsModel.js";
 
 //add product
 export const addProduct = async (req, res) => {
-  //console.log(req.body);
-  // console.log(req.files);
+  
+
   const thumbnail = req.files.thumbnail[0].filename;
   const images = req.files.images.map((i) => i.filename);
+
+  const features = req.body.features ? JSON.parse(req.body.features) : {};
+
   try {
-    const newProduct = new Product({ ...req.body, thumbnail, images });
+    const newProduct = new Product({ ...req.body, thumbnail, images, features });
     await newProduct.save();
     const products = await Product.aggregate([
       {
@@ -21,6 +24,7 @@ export const addProduct = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
 
 //get all products or by query
 export const getAllProducts = async (req, res) => {
@@ -82,14 +86,6 @@ export const getOneProduct = async (req, res) => {
 
 //update product
 export const updateProduct = async (req, res) => {
-  //to split colors and save it as an array
-  if (req.body.colors && typeof req.body.colors === "string") {
-    req.body.colors = req.body.colors.split(",").map((color) => color.trim());
-  }
-  //to split colors and save it as an array
-  if (req.body.memory && typeof req.body.memory === "string") {
-    req.body.memory = req.body.memory.split(",").map((item) => item.trim());
-  }
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
