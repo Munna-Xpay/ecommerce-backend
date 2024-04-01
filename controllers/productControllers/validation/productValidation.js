@@ -10,8 +10,10 @@ const productSchema = Joi.object({
     about: Joi.string().required(),
     discounted_price: Joi.number().required(),
     original_price: Joi.number().required(),
-    memory: Joi.array().items(Joi.string()),
-    colors: Joi.array().items(Joi.string()).required(),
+    features: Joi.array().items(Joi.object({
+        key: Joi.string().required(),
+        value: Joi.string().required()
+    })).required() ,
     category: Joi.string().required(),
     manufacturer: Joi.string().required(),
     warranty: Joi.string(),
