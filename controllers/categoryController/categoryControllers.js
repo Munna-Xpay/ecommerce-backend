@@ -1,6 +1,7 @@
+import mongoose from "mongoose";
 import Category from "../../models/categoryModel.js";
 import Product from "../../models/productsModel.js";
-import Seller from "../../models/sellerModel.js";
+
 
 //add Category
 export const addCategory = async (req, res) => {
@@ -228,3 +229,62 @@ export const getProductsByFilter = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+//seller
+
+//product grid
+
+export const getSellerProductsGrid = async (req, res) => {
+  let { categoryFilter, sort_option } = req.query;
+  const { id } = req.params;
+
+  try {
+    console.log("Seller ID:", id);
+
+    // Default sort option
+    let sortValue = { total_sold: -1 };
+
+    // Update sort option if provided
+    switch (sort_option) {
+      case "Availability":
+        sortValue = { inStock: -1 };
+        break;
+      case "low_to_high":
+        sortValue = { discounted_price: 1 };
+        break;
+      case "high_to_low":
+        sortValue = { discounted_price: -1 };
+        break;
+      default:
+        break;
+    }
+   // Convert id to ObjectId
+   const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
+    // Execute the aggregation
+    const products = await Product.aggregate([
+      {
+        $match: {
+          isActive: true,
+          seller: sellerId,
+          ...(categoryFilter && { category: categoryFilter }),
+        },
+      },
+      {
+        $sort: sortValue,
+      },
+    ]);
+
+    res.status(200).json(products);
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
+
+
+
