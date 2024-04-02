@@ -1,7 +1,37 @@
 import Seller from '../../models/sellerModel.js';
 import nodemailer from 'nodemailer'
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+// seller login
+export const sellerLogin = async (req, res) => {
+    const { email, password } = req.body;
 
+    try {
+        const loggedSeller = await Seller.findOne({ email })
+        if (loggedSeller) {
+            bcrypt.compare(password, loggedSeller.password, (err, result) => {
+                if (err) {
+                    res.status(500).json({ error: err, message: 'Wrong password !' })
+                }
+                if (result) {
+                    //token
+                    const token = jwt.sign({ _id: loggedSeller._id }, "m17");
+                    res.status(200).json({
+                        user: loggedSeller,
+                        token,
+                    });
+                }
+                else {
+                    res.status(400).json('Wrong password!')
+                }
+            });
+        } else {
+            res.status(404).json("User not found!");
+        }
+    } catch (err) {
+        res.status(401).json({ error: err, message: "Login failed" });
+    }
+};
 
 //add seller
 export const addSeller = async (req, res) => {
