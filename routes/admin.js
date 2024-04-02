@@ -113,4 +113,6 @@ router.get('/get-notification', jwtMiddleware, getAllNotification);
 //update notification route
 router.put('/update-notification/:id', jwtMiddleware, updateNotification);
 
+
+
 export default router

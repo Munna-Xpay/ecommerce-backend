@@ -5,7 +5,7 @@ import cors from 'cors'
 import productsRouter from './routes/products.js';
 import usersRouter from './routes/users.js'
 import adminRouter from './routes/admin.js'
-
+import sellerRouter from './routes/seller.js'
 const app = express()
 
 app.use(express.json())
@@ -13,6 +13,7 @@ app.use(cors())
 app.use('/api/admin', adminRouter)
 app.use('/api/product', productsRouter)
 app.use('/api/auth', usersRouter)
+app.use('/api/seller',sellerRouter)
 app.use("/uploadedFiles", express.static("./uploadedFiles"))
 
 
