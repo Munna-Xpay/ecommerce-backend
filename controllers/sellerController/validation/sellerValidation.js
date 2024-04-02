@@ -15,8 +15,23 @@ const sellerSchema = Joi.object({
     website: Joi.string().required()
 })
 
+const sellerLoginSchema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required()
+})
+
 export const validateSellerRequest = (req, res, next) => {
     sellerSchema.validateAsync(req.body)
+        .then(value => {
+            next();
+        })
+        .catch(error => {
+            res.status(501).json({ error });
+        });
+}
+
+export const validateSellerLoginRequest = (req, res, next) => {
+    sellerLoginSchema.validateAsync(req.body)
         .then(value => {
             next();
         })

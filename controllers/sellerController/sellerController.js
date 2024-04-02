@@ -17,7 +17,7 @@ export const sellerLogin = async (req, res) => {
                     //token
                     const token = jwt.sign({ _id: loggedSeller._id }, "m17");
                     res.status(200).json({
-                        user: loggedSeller,
+                        seller: loggedSeller,
                         token,
                     });
                 }
