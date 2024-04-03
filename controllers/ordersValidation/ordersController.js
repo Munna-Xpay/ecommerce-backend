@@ -147,6 +147,25 @@ export const updateOrder = async (req, res) => {
     }
 }
 
+//update order by seller
+export const updateOrderBySeller = async (req, res) => {
+    // console.log(req.params)
+    try {
+        const updatedOrder = await Order.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+        // const userOrderDetails = await Order.aggregate([
+        //     { $unwind: "$products" },
+        //     {
+        //         $match: { "products.product.seller._id": req.params.id }
+        //     }
+        // ]);
+
+        res.status(200).json({ message: "Order status updated successfull" });
+    }
+    catch (err) {
+        res.status(401).json({ error: err, message: 'Orders details update failed' })
+    }
+}
+
 //get Orders And Income Of This Year
 export const getOrdersAndIncomeOfThisYear = async (req, res) => {
     try {
@@ -327,16 +346,16 @@ export const getOrderByCategory = async (req, res) => {
 
         switch (sort_option) {
             case "A-Z":
-                sortValue = { 'products.product.title': 1 }; 
+                sortValue = { 'products.product.title': 1 };
                 break;
             case "Z-A":
                 sortValue = { 'products.product.title': -1 };
                 break;
             case "rating_low_to_high":
-                sortValue = { 'products.product.review_star': 1 }; 
+                sortValue = { 'products.product.review_star': 1 };
                 break;
             case "rating_high_to_low":
-                sortValue = { 'products.product.review_star': -1 }; 
+                sortValue = { 'products.product.review_star': -1 };
                 break;
             default:
                 break;
@@ -345,7 +364,50 @@ export const getOrderByCategory = async (req, res) => {
         const userOrderDetails = await Order.aggregate([
             { $unwind: "$products" },
             { $match: category === "All" ? {} : { "products.product.category": category } }, // Match orders with specified category
-            { $sort: sortValue } 
+            { $sort: sortValue }
+        ]);
+
+        res.status(200).json(userOrderDetails);
+    } catch (err) {
+        res.status(401).json({ error: err, message: 'Orders access failed' });
+    }
+};
+
+//order by category by seller
+export const getOrderByCategoryBySeller = async (req, res) => {
+    let { categoryFilter, sort_option } = req.query;
+
+    // Default category is "Electronics"
+    let category = categoryFilter || "All";
+
+    try {
+        // Default sort option: name A-Z
+        let sortValue = { 'products.product.title': 1 };
+
+        switch (sort_option) {
+            case "A-Z":
+                sortValue = { 'products.product.title': 1 };
+                break;
+            case "Z-A":
+                sortValue = { 'products.product.title': -1 };
+                break;
+            case "rating_low_to_high":
+                sortValue = { 'products.product.review_star': 1 };
+                break;
+            case "rating_high_to_low":
+                sortValue = { 'products.product.review_star': -1 };
+                break;
+            default:
+                break;
+        }
+
+        const userOrderDetails = await Order.aggregate([
+            { $unwind: "$products" },
+            { $match: category === "All" ? {} : { "products.product.category": category } }, // Match orders with specified category
+            { $sort: sortValue },
+            {
+                $match: { "products.product.seller._id": req.params.id }
+            }
         ]);
 
         res.status(200).json(userOrderDetails);
