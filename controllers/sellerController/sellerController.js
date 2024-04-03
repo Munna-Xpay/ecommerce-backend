@@ -159,7 +159,9 @@ export const updateSeller = async (req, res) => {
 
 //update seller company icon
 export const updateSellerCompanyIcon = async (req, res) => {
+    console.log(req.file)
     req.body.company_icon = req.file.filename
+    console.log(req.body)
     try {
         const seller = await Seller.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         res.status(200).json(seller);
