@@ -148,7 +148,7 @@ export const getProductsGrid = async (req, res) => {
         sortValue.total_sold = -1;
         break;
       case "Availability":
-        sortValue.inStock = -1;
+        sortValue.stockQuantity = -1;
         break;
       case "low_to_high":
         sortValue.discounted_price = 1;
@@ -240,15 +240,12 @@ export const getSellerProductsGrid = async (req, res) => {
   const { id } = req.params;
 
   try {
-    console.log("Seller ID:", id);
-
+    
     // Default sort option
     let sortValue = { total_sold: -1 };
-
-    // Update sort option if provided
     switch (sort_option) {
       case "Availability":
-        sortValue = { inStock: -1 };
+        sortValue = { stockQuantity: -1 };
         break;
       case "low_to_high":
         sortValue = { discounted_price: 1 };
@@ -261,7 +258,6 @@ export const getSellerProductsGrid = async (req, res) => {
     }
    // Convert id to ObjectId
    const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
-    // Execute the aggregation
     const products = await Product.aggregate([
       {
         $match: {
@@ -283,6 +279,64 @@ export const getSellerProductsGrid = async (req, res) => {
 };
 
 
+//product management
+export const getSellerProductsByFilter = async (req, res) => {
+  let {categoryFilter, stockFilter, productTypeFilter, additionalOption, searchData,} = req.query;
+ const {id}=req.params
+  // Convert id to ObjectId
+  const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
+  try {
+    let pipeline = [];
+     // Match sellerId
+     pipeline.push({ $match: { seller: sellerId } });
+//filter check
+    let Filters = {};
+    if (categoryFilter) {
+      Filters.category = categoryFilter;
+    }
+    if (stockFilter) {
+      Filters.stock = stockFilter;
+    }
+    if (productTypeFilter) {
+      Filters.product_type = productTypeFilter;
+    }
+//sort check
+      let sortValue = {};
+      switch (additionalOption) {
+        case "last_modified":
+          sortValue.updatedAt = -1;
+          break;
+        case "date_added":
+          sortValue.createdAt = -1;
+          break;
+        case "rating_low_to_high":
+          sortValue.review_star = 1;
+          break;
+        case "rating_high_to_low":
+          sortValue.review_star = -1;
+          break;
+        default:
+          break;
+      }
+      if (Object.keys(Filters).length > 0) {
+        pipeline.push({ $match: Filters });
+      }
+      //search
+      if (searchData) {
+        pipeline.push({ $match: { title: { $regex: new RegExp(searchData, 'i') } } });
+    }
+        if (Object.keys(sortValue).length > 0) {
+            pipeline.push({ $sort: sortValue });
+        }
+        if (pipeline.length === 0) {
+            pipeline.push({ $match: {seller:sellerId}});
+          }
+        const allProducts = await Product.aggregate(pipeline);
+        res.status(200).json(allProducts);
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 
 
