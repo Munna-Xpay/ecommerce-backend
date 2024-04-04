@@ -1,7 +1,10 @@
 import Seller from '../../models/sellerModel.js';
+import Review from '../../models/reviewsModel.js';
 import nodemailer from 'nodemailer'
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import mongoose from 'mongoose';
+
 // seller login
 export const sellerLogin = async (req, res) => {
     const { email, password } = req.body;
@@ -254,7 +257,17 @@ export const getIncomeStatOfAParticularSeller = async (req, res) => {
 
 //get seller reviwe stat
 export const getSellerReviewStat = async (req, res) => {
-
+    const sellerId = new mongoose.Types.ObjectId(req.params.id);
+    let sortBy = { createdAt: -1 };
+    if (req.query.recent) {
+        sortBy.createdAt = -1
+    } else if (req.query.oldest) {
+        sortBy = { createdAt: 1 }
+    } else if (req.query.lowest_rating) {
+        sortBy = { review_stars: 1 }
+    } else if (req.query.highest_rating) {
+        sortBy = { review_stars: -1 }
+    }
     try {
         const sellerReviewStat = await Seller.aggregate([
             {
@@ -337,10 +350,16 @@ export const getSellerReviewStat = async (req, res) => {
                 }
             },
             {
+                $match: { _id: sellerId }
+            },
+            {
                 $sort: { total_rating: -1 }
             }
         ]);
-        res.status(200).json(sellerReviewStat);
+
+        const all_reviews = await Review.find().sort(sortBy).populate({ path: "productId", select: "seller" }).populate({ path: "reviewFrom", select: "email fullName profileImage" })
+        const reviews = all_reviews.filter(item => item.productId?.seller == req.params.id)
+        res.status(200).json({ ...sellerReviewStat[0], all_reviews: reviews });
     }
     catch (err) {
         res.status(401).json({ error: err, message: 'Failed to fetch seller review stat' })

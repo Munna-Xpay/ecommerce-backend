@@ -20,7 +20,7 @@ router.post('/add-seller', jwtMiddleware, fileUploads.single("company_icon"), va
 router.get('/get-seller', getAllSeller);
 
 //get seller review stat route
-router.get('/get-seller-review-stat', jwtMiddleware, getSellerReviewStat);
+router.get('/get-seller-review-stat/:id', jwtMiddleware, getSellerReviewStat);
 
 //update seller route
 router.put('/update-seller/:id', jwtMiddleware, updateSeller);
@@ -32,7 +32,7 @@ router.put('/update-seller-company-icon/:id', jwtMiddleware, fileUploads.single(
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
 
 //edit seller password route
-router.put('/update-password-seller/:id', updatePassword);
+router.put('/update-password-seller/:id', jwtMiddleware, updatePassword);
 
 
 
