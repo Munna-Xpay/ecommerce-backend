@@ -237,8 +237,9 @@ export const getProductsByFilter = async (req, res) => {
 
 export const getSellerProductsGrid = async (req, res) => {
   let { categoryFilter, sort_option } = req.query;
-  const { id } = req.params;
-
+  const id  = req.payload
+// Convert id to ObjectId
+const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
   try {
     
     // Default sort option
@@ -256,8 +257,7 @@ export const getSellerProductsGrid = async (req, res) => {
       default:
         break;
     }
-   // Convert id to ObjectId
-   const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
+   
     const products = await Product.aggregate([
       {
         $match: {
@@ -282,7 +282,7 @@ export const getSellerProductsGrid = async (req, res) => {
 //product management
 export const getSellerProductsByFilter = async (req, res) => {
   let {categoryFilter, stockFilter, productTypeFilter, additionalOption, searchData,} = req.query;
- const {id}=req.params
+  const id  = req.payload
   // Convert id to ObjectId
   const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
   try {
@@ -338,7 +338,96 @@ export const getSellerProductsByFilter = async (req, res) => {
   }
 };
 
+//product total price by category
+export const getPriceByCategorySeller = async (req, res) => {
+  const id=req.payload
+  const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
 
+  try {
+    const categoryData = await Product.aggregate([
+      
+        {
+          $match:{seller:sellerId}
+        },
+       { 
+        $group: {
+          _id: "$category",
+          total_price: { $sum: { $multiply: ["$product_sold", "$discounted_price"] } },
+        }
+      }
+      
+    ]);
+    res.status(200).json(categoryData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
 
+//seller top products
+//products by category
+export const getSellerProductsByCategory = async (req, res) => {
+  const id=req.payload
+  const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
 
+  try {
+    const products = await Product.aggregate([
+      {
+        $match: {
+          category: { $in: ["Electronics", "Fashion", "Groceries"] },isActive:true,seller:sellerId
+        },
+      },
+    ]);
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+//get seller product total price by category
+export const sellerProductCategory = async (req, res) => {
+  const id=req.payload
+  const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
+  try {
+    const sellerProducts = await Product.aggregate([
+      {
+$match:{seller:sellerId}
+      },
+      {
+        $lookup: {
+          from: "sellers",
+          localField: "seller",
+          foreignField: "_id",
+          as: "sellerDetails",
+        },
+      },
+      {
+        $unwind: { path: "$sellerDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $group: {
+          _id: {
+            sellerId: "$seller",
+            category: "$category",
+          },
+          seller: { $first: "$sellerDetails" },
+          totalAmount: { $sum: "$discounted_price" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          sellerLogo: "$seller",
+          category: "$_id.category",
+          totalPrice: "$totalAmount",
+        },
+      },
+      {
+        $limit: 3,
+      },
+    ]);
+    res.status(200).json(sellerProducts);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
 
