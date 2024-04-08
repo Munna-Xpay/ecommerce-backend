@@ -7,7 +7,8 @@ const notificationSchema = Joi.object({
     notifyMsg: Joi.string().required(),
     type: Joi.string().required(),
     response: Joi.string(),
-    item_id: Joi.string().required()
+    item_id: Joi.string().required(),
+    userId: Joi.string().required()
 })
 
 export const validateNotificationRequest = (req, res, next) => {
