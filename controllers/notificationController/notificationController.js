@@ -22,11 +22,21 @@ export const getAllNotification = async (req, res) => {
     }
 }
 
+//get reponse notifications
+export const getResponseNotification = async (req, res) => {
+    try {
+        const notifications = await Notify.find({ userId: req.params.id }).sort({ updatedAt: -1 })
+        res.status(200).json(notifications);
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
 //update notification
 export const updateNotification = async (req, res) => {
     try {
         const notification = await Notify.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
-        const all_notifications = await Notify.find({ createdAt: -1 })
+        const all_notifications = await Notify.find().sort({ createdAt: -1 })
         res.status(200).json(all_notifications);
     } catch (err) {
         res.status(500).json(err)
