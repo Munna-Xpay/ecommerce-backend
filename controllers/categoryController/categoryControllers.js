@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import Category from "../../models/categoryModel.js";
 import Product from "../../models/productsModel.js";
 
-
 //add Category
 export const addCategory = async (req, res) => {
   try {
@@ -63,7 +62,9 @@ export const getPriceByCategory = async (req, res) => {
       {
         $group: {
           _id: "$category",
-          total_price: { $sum: { $multiply: ["$product_sold", "$discounted_price"] } },
+          total_price: {
+            $sum: { $multiply: ["$product_sold", "$discounted_price"] },
+          },
         },
       },
     ]);
@@ -79,7 +80,8 @@ export const getProductsByCategory = async (req, res) => {
     const products = await Product.aggregate([
       {
         $match: {
-          category: { $in: ["Electronics", "Fashion", "Groceries"] },isActive:true
+          category: { $in: ["Electronics", "Fashion", "Groceries"] },
+          isActive: true,
         },
       },
     ]);
@@ -174,14 +176,19 @@ export const getProductsGrid = async (req, res) => {
   }
 };
 
-
 //product management table data
 export const getProductsByFilter = async (req, res) => {
-  let {categoryFilter, stockFilter, productTypeFilter, additionalOption, searchData,} = req.query;
- 
+  let {
+    categoryFilter,
+    stockFilter,
+    productTypeFilter,
+    additionalOption,
+    searchData,
+  } = req.query;
+
   try {
     let pipeline = [];
-//filter check
+    //filter check
     let Filters = {};
     if (categoryFilter) {
       Filters.category = categoryFilter;
@@ -192,44 +199,45 @@ export const getProductsByFilter = async (req, res) => {
     if (productTypeFilter) {
       Filters.product_type = productTypeFilter;
     }
-//sort check
-      let sortValue = {};
-      switch (additionalOption) {
-        case "last_modified":
-          sortValue.updatedAt = -1;
-          break;
-        case "date_added":
-          sortValue.createdAt = -1;
-          break;
-        case "rating_low_to_high":
-          sortValue.review_star = 1;
-          break;
-        case "rating_high_to_low":
-          sortValue.review_star = -1;
-          break;
-        default:
-          break;
-      }
-      if (Object.keys(Filters).length > 0) {
-        pipeline.push({ $match: Filters });
-      }
-      //search
-      if (searchData) {
-        pipeline.push({ $match: { title: { $regex: new RegExp(searchData, 'i') } } });
+    //sort check
+    let sortValue = {};
+    switch (additionalOption) {
+      case "last_modified":
+        sortValue.updatedAt = -1;
+        break;
+      case "date_added":
+        sortValue.createdAt = -1;
+        break;
+      case "rating_low_to_high":
+        sortValue.review_star = 1;
+        break;
+      case "rating_high_to_low":
+        sortValue.review_star = -1;
+        break;
+      default:
+        break;
     }
-        if (Object.keys(sortValue).length > 0) {
-            pipeline.push({ $sort: sortValue });
-        }
-        if (pipeline.length === 0) {
-            pipeline.push({ $match: {} });
-          }
-        const allProducts = await Product.aggregate(pipeline);
-        res.status(200).json(allProducts);
+    if (Object.keys(Filters).length > 0) {
+      pipeline.push({ $match: Filters });
+    }
+    //search
+    if (searchData) {
+      pipeline.push({
+        $match: { title: { $regex: new RegExp(searchData, "i") } },
+      });
+    }
+    if (Object.keys(sortValue).length > 0) {
+      pipeline.push({ $sort: sortValue });
+    }
+    if (pipeline.length === 0) {
+      pipeline.push({ $match: {} });
+    }
+    const allProducts = await Product.aggregate(pipeline);
+    res.status(200).json(allProducts);
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 //seller
 
@@ -237,11 +245,10 @@ export const getProductsByFilter = async (req, res) => {
 
 export const getSellerProductsGrid = async (req, res) => {
   let { categoryFilter, sort_option } = req.query;
-  const id  = req.payload
-// Convert id to ObjectId
-const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
+  const id = req.payload;
+  // Convert id to ObjectId
+  const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
   try {
-    
     // Default sort option
     let sortValue = { total_sold: -1 };
     switch (sort_option) {
@@ -257,7 +264,7 @@ const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
       default:
         break;
     }
-   
+
     const products = await Product.aggregate([
       {
         $match: {
@@ -278,18 +285,23 @@ const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
   }
 };
 
-
 //product management
 export const getSellerProductsByFilter = async (req, res) => {
-  let {categoryFilter, stockFilter, productTypeFilter, additionalOption, searchData,} = req.query;
-  const id  = req.payload
+  let {
+    categoryFilter,
+    stockFilter,
+    productTypeFilter,
+    additionalOption,
+    searchData,
+  } = req.query;
+  const id = req.payload;
   // Convert id to ObjectId
   const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
   try {
     let pipeline = [];
-     // Match sellerId
-     pipeline.push({ $match: { seller: sellerId } });
-//filter check
+    // Match sellerId
+    pipeline.push({ $match: { seller: sellerId } });
+    //filter check
     let Filters = {};
     if (categoryFilter) {
       Filters.category = categoryFilter;
@@ -300,39 +312,41 @@ export const getSellerProductsByFilter = async (req, res) => {
     if (productTypeFilter) {
       Filters.product_type = productTypeFilter;
     }
-//sort check
-      let sortValue = {};
-      switch (additionalOption) {
-        case "last_modified":
-          sortValue.updatedAt = -1;
-          break;
-        case "date_added":
-          sortValue.createdAt = -1;
-          break;
-        case "rating_low_to_high":
-          sortValue.review_star = 1;
-          break;
-        case "rating_high_to_low":
-          sortValue.review_star = -1;
-          break;
-        default:
-          break;
-      }
-      if (Object.keys(Filters).length > 0) {
-        pipeline.push({ $match: Filters });
-      }
-      //search
-      if (searchData) {
-        pipeline.push({ $match: { title: { $regex: new RegExp(searchData, 'i') } } });
+    //sort check
+    let sortValue = {};
+    switch (additionalOption) {
+      case "last_modified":
+        sortValue.updatedAt = -1;
+        break;
+      case "date_added":
+        sortValue.createdAt = -1;
+        break;
+      case "rating_low_to_high":
+        sortValue.review_star = 1;
+        break;
+      case "rating_high_to_low":
+        sortValue.review_star = -1;
+        break;
+      default:
+        break;
     }
-        if (Object.keys(sortValue).length > 0) {
-            pipeline.push({ $sort: sortValue });
-        }
-        if (pipeline.length === 0) {
-            pipeline.push({ $match: {seller:sellerId}});
-          }
-        const allProducts = await Product.aggregate(pipeline);
-        res.status(200).json(allProducts);
+    if (Object.keys(Filters).length > 0) {
+      pipeline.push({ $match: Filters });
+    }
+    //search
+    if (searchData) {
+      pipeline.push({
+        $match: { title: { $regex: new RegExp(searchData, "i") } },
+      });
+    }
+    if (Object.keys(sortValue).length > 0) {
+      pipeline.push({ $sort: sortValue });
+    }
+    if (pipeline.length === 0) {
+      pipeline.push({ $match: { seller: sellerId } });
+    }
+    const allProducts = await Product.aggregate(pipeline);
+    res.status(200).json(allProducts);
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -340,22 +354,22 @@ export const getSellerProductsByFilter = async (req, res) => {
 
 //product total price by category
 export const getPriceByCategorySeller = async (req, res) => {
-  const id=req.payload
+  const id = req.payload;
   const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
 
   try {
     const categoryData = await Product.aggregate([
-      
-        {
-          $match:{seller:sellerId}
-        },
-       { 
+      {
+        $match: { seller: sellerId },
+      },
+      {
         $group: {
           _id: "$category",
-          total_price: { $sum: { $multiply: ["$product_sold", "$discounted_price"] } },
-        }
-      }
-      
+          total_price: {
+            $sum: { $multiply: ["$product_sold", "$discounted_price"] },
+          },
+        },
+      },
     ]);
     res.status(200).json(categoryData);
   } catch (err) {
@@ -366,14 +380,16 @@ export const getPriceByCategorySeller = async (req, res) => {
 //seller top products
 //products by category
 export const getSellerProductsByCategory = async (req, res) => {
-  const id=req.payload
+  const id = req.payload;
   const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
 
   try {
     const products = await Product.aggregate([
       {
         $match: {
-          category: { $in: ["Electronics", "Fashion", "Groceries"] },isActive:true,seller:sellerId
+          category: { $in: ["Electronics", "Fashion", "Groceries"] },
+          isActive: true,
+          seller: sellerId,
         },
       },
     ]);
@@ -385,12 +401,12 @@ export const getSellerProductsByCategory = async (req, res) => {
 
 //get seller product total price by category
 export const sellerProductCategory = async (req, res) => {
-  const id=req.payload
+  const id = req.payload;
   const sellerId = mongoose.Types.ObjectId.createFromHexString(String(id));
   try {
     const sellerProducts = await Product.aggregate([
       {
-$match:{seller:sellerId}
+        $match: { seller: sellerId },
       },
       {
         $lookup: {
@@ -430,4 +446,3 @@ $match:{seller:sellerId}
     res.status(500).json(err);
   }
 };
-

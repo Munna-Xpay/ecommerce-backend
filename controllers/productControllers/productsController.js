@@ -16,8 +16,11 @@ export const addProduct = async (req, res) => {
       {
         $match: {
           category: { $in: ["Electronics", "Fashion", "Groceries"] },
-        },
+        }
       },
+      {
+        $sort:{createdAt:-1}
+      }
     ]);
     res.status(200).json(products);
   } catch (err) {
