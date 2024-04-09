@@ -25,7 +25,12 @@ const notifySchema = new mongoose.Schema({
     item_id: {
         type: String,
         required: true
-    }
+    },
+    userId: {
+        type: String,
+        required: true
+    },
+
 }, { timestamps: true })
 
 const notifyModel = mongoose.model("notifications", notifySchema);

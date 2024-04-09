@@ -6,7 +6,7 @@ import { addCategory, deleteCategory, getAllCategory, getCategoryByType, getPric
 import { validateCategoryRequest } from '../controllers/categoryController/validation/categoryValidation.js';
 import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoupon } from '../controllers/couponsController/couponController.js';
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
-import { getOrdersAndIncomeOfThisYear, getPeriodSalesRevenue, getSalesActivity, updateOrder } from '../controllers/ordersValidation/ordersController.js';
+import { getOrdersAndIncomeOfThisYear, getPeriodSalesRevenue, getSalesActivity, updateOrder, updateOrderBySeller } from '../controllers/ordersValidation/ordersController.js';
 import fileUploads from '../middlewares/multerMiddleware.js';
 import { addNotification, getAllNotification, updateNotification } from '../controllers/notificationController/notificationController.js';
 import { validateNotificationRequest } from '../controllers/notificationController/validation/notificationValidation.js';
@@ -20,10 +20,7 @@ router.post('/add-seller', jwtMiddleware, fileUploads.single("company_icon"), va
 router.get('/get-seller', getAllSeller);
 
 //get seller review stat route
-router.get('/get-seller-review-stat', jwtMiddleware, getSellerReviewStat);
-
-//get one seller route
-router.get('/get-one-seller/:id', jwtMiddleware, getOneSeller);
+router.get('/get-seller-review-stat/:id', jwtMiddleware, getSellerReviewStat);
 
 //update seller route
 router.put('/update-seller/:id', jwtMiddleware, updateSeller);
@@ -35,7 +32,7 @@ router.put('/update-seller-company-icon/:id', jwtMiddleware, fileUploads.single(
 router.delete('/delete-seller/:id', jwtMiddleware, deleteSeller);
 
 //edit seller password route
-router.put('/update-password-seller/:id', updatePassword);
+router.put('/update-password-seller/:id', jwtMiddleware, updatePassword);
 
 
 
@@ -79,7 +76,10 @@ router.get('/get-orders-by-month', jwtMiddleware, getOrdersAndIncomeOfThisYear)
 router.get('/get-income-seller', jwtMiddleware, getIncomeStatOfAParticularSeller)
 
 //update order
-router.put('/update-order/:id',jwtMiddleware, updateOrder)
+router.put('/update-order/:id', jwtMiddleware, updateOrder)
+
+//update order by seller
+router.put('/update-order-by-seller/:id', jwtMiddleware, updateOrderBySeller)
 
 
 //get price by category
@@ -112,5 +112,7 @@ router.get('/get-notification', jwtMiddleware, getAllNotification);
 
 //update notification route
 router.put('/update-notification/:id', jwtMiddleware, updateNotification);
+
+
 
 export default router
