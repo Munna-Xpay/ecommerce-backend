@@ -8,7 +8,7 @@ import { addCoupon, deleteCoupon, getAllCoupon, getAvaialableCoupons, updateCoup
 import { validateCouponRequest } from '../controllers/couponsController/validation/couponsValidation.js';
 import { getOrdersAndIncomeOfThisYear, getPeriodSalesRevenue, getSalesActivity, updateOrder, updateOrderBySeller } from '../controllers/ordersValidation/ordersController.js';
 import fileUploads from '../middlewares/multerMiddleware.js';
-import { addNotification, getAllNotification, updateNotification } from '../controllers/notificationController/notificationController.js';
+import { addNotification, getAllNotification, getResponseNotification, updateNotification } from '../controllers/notificationController/notificationController.js';
 import { validateNotificationRequest } from '../controllers/notificationController/validation/notificationValidation.js';
 
 const router = express.Router();
@@ -109,6 +109,9 @@ router.post('/add-notification', jwtMiddleware, validateNotificationRequest, add
 
 //get notification route
 router.get('/get-notification', jwtMiddleware, getAllNotification);
+
+//get reponse notification route
+router.get('/get-response-notification/:id', jwtMiddleware, getResponseNotification);
 
 //update notification route
 router.put('/update-notification/:id', jwtMiddleware, updateNotification);
