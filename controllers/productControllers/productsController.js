@@ -16,8 +16,11 @@ export const addProduct = async (req, res) => {
       {
         $match: {
           category: { $in: ["Electronics", "Fashion", "Groceries"] },
-        },
+        }
       },
+      {
+        $sort:{createdAt:-1}
+      }
     ]);
     res.status(200).json(products);
   } catch (err) {
@@ -103,6 +106,7 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+
 //product image update
 export const productImageUpdate = async (req, res) => {
   try {
@@ -122,12 +126,7 @@ export const productImageUpdate = async (req, res) => {
         images.push(file.filename);
       });
     }
-
-
     const product = await Product.findByIdAndUpdate(req.params.id, { thumbnail: thumbnail, images: images }, { new: true });
-
-
-
     const products = await Product.aggregate([
       {
         $match: {
@@ -197,6 +196,54 @@ export const deleteProductPermanent = async (req, res) => {
   try {
     const disableProduct = await Product.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "product deleted successfully" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+
+
+//product update(SELLER)
+export const sellerUpdateProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+   
+    res.status(200).json('Product updated!');
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+//product image update(SELLER)
+export const sellerProductImageUpdate = async (req, res) => {
+  try {
+    console.log(req.files);
+    console.log(req.body);
+    const thumbnail = req.files.thumbnail ? req.files.thumbnail[0].filename : req.body.thumbnail;
+    // Get image filenames
+    let images = req.body.images || [];
+
+    // If images is not an array, convert it to an array
+    if (!Array.isArray(images)) {
+      images = [images];
+    }
+    // If req.files.images exists, push new image filenames to the array
+    if (req.files.images) {
+      req.files.images.map((file) => {
+        images.push(file.filename);
+      });
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, { thumbnail: thumbnail, images: images }, { new: true });
+    const products = await Product.aggregate([
+      {
+        $match: {
+          category: { $in: ["Electronics", "Fashion", "Groceries"] },
+        },
+      }
+    ]);
+    res.status(200).json(products);
   } catch (err) {
     res.status(500).json(err);
   }
