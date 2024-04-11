@@ -40,6 +40,7 @@ export const sellerLogin = async (req, res) => {
 export const addSeller = async (req, res) => {
     console.log(req.file.filename)
     req.body.company_icon = req.file.filename
+    const pWord = req.body.password
     const hashedPass = await bcrypt.hash(req.body.password, 10);
     req.body.password = hashedPass
     try {
@@ -63,7 +64,7 @@ export const addSeller = async (req, res) => {
             ],
             subject: "Account password",
             html: `
-                <h1>Welcome ${req.body.company_name} to our community <br/> your account created by admin .<br> <h3>Your E-commerse app login password : ${req.body.password}</h1>
+                <h1>Welcome ${req.body.company_name} to our community <br/> your account created by admin .<br> <h3>Your E-commerse app login password : ${pWord}</h1>
                 <img src="https://shop-point.merku.love/assets/logo_light-33bb10d5.svg" alt="Embedded Logo" style="width: 200px;height:200px;object-fit:contain">
             `,
         };

@@ -29,7 +29,7 @@ export const addToCart = async (req, res) => {
 export const cartProducts = async (req, res) => {
     const userId = req.payload
     try {
-        const products = await Cart.find({ userId }).populate('product')
+        const products = await Cart.find({ userId })
         if (products) {
             res.status(200).json(products)
         }

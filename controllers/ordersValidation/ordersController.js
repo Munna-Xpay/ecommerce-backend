@@ -407,10 +407,10 @@ export const getOrderByCategoryBySeller = async (req, res) => {
         const userOrderDetails = await Order.aggregate([
             { $unwind: "$products" },
             { $match: category === "All" ? {} : { "products.product.category": category } }, // Match orders with specified category
-            { $sort: sortValue },
             {
                 $match: { "products.product.seller._id": req.params.id }
-            }
+            },
+            { $sort: sortValue },
         ]);
 
         res.status(200).json(userOrderDetails);
