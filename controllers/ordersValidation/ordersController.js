@@ -342,9 +342,12 @@ export const getOrderByCategory = async (req, res) => {
 
     try {
         // Default sort option: name A-Z
-        let sortValue = { 'products.product.title': 1 };
+        let sortValue = { 'createdAt': -1 };
 
         switch (sort_option) {
+            case "latest":
+                sortValue = { 'createdAt': -1 };
+                break;
             case "A-Z":
                 sortValue = { 'products.product.title': 1 };
                 break;
