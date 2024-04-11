@@ -29,7 +29,7 @@ export const addToWishlist=async(req,res)=>{
 export const getWishlistProducts=async(req,res)=>{
     const userId=req.payload
     try{
-        const wishlistProducts=await Wishlist.find({userId}).populate('product')
+        const wishlistProducts=await Wishlist.find({userId})
         if(wishlistProducts){
             res.status(200).json(wishlistProducts)
         }
