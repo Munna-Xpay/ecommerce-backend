@@ -44,12 +44,12 @@ export const updateNotification = async (req, res) => {
 }
 
 // //delete review
-// export const deleteReview = async (req, res) => {
-//     try {
-//         const deletedreview = await Review.findByIdAndDelete(req.params.id);
-//         res.status(200).json({ message: 'review deleted successfully' });
-//     } catch (err) {
-//         res.status(500).json(err)
-//     }
-// }
+export const deleteReview = async (req, res) => {
+    try {
+        const deletedreview = await Review.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'review deleted successfully' });
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
 
