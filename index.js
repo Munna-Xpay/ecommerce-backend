@@ -6,7 +6,12 @@ import productsRouter from './routes/products.js';
 import usersRouter from './routes/users.js'
 import adminRouter from './routes/admin.js'
 import sellerRouter from './routes/seller.js'
+import http from 'http'
+import { Server } from 'socket.io';
+
 const app = express()
+const server=http.createServer(app);
+const io=new Server(server)
 
 app.use(express.json())
 app.use(cors())
@@ -16,10 +21,18 @@ app.use('/api/auth', usersRouter)
 app.use('/api/seller',sellerRouter)
 app.use("/uploadedFiles", express.static("./uploadedFiles"))
 
+// WebSocket connection handling
+io.on('connection', (socket) => {
+    console.log('Client connected');
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
 
 const port = process.env.PORT || 4000;
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log("server listening on port " + port)
     try {
         mongoose.connect(process.env.MONGO_URL)
