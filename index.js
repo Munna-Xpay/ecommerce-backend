@@ -11,7 +11,12 @@ import { Server } from 'socket.io';
 
 const app = express()
 const server=http.createServer(app);
-const io=new Server(server)
+const io = new Server(server, {
+    cors: {
+      origin: "*", // Allow requests from any origin, replace with your actual frontend URL
+      methods: ["GET", "POST"] // Allow only GET and POST requests
+    }
+  });
 
 app.use(express.json())
 app.use(cors())
