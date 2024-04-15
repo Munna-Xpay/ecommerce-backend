@@ -385,9 +385,14 @@ export const getOrderByCategoryBySeller = async (req, res) => {
 
     try {
         // Default sort option: name A-Z
-        let sortValue = { 'products.product.title': 1 };
+        // let sortValue = { 'products.product.title': 1 };
+
+        let sortValue = { 'createdAt': -1 };
 
         switch (sort_option) {
+            case "latest":
+                sortValue = { 'createdAt': -1 };
+                break;
             case "A-Z":
                 sortValue = { 'products.product.title': 1 };
                 break;
@@ -403,6 +408,23 @@ export const getOrderByCategoryBySeller = async (req, res) => {
             default:
                 break;
         }
+
+        // switch (sort_option) {
+        //     case "A-Z":
+        //         sortValue = { 'products.product.title': 1 };
+        //         break;
+        //     case "Z-A":
+        //         sortValue = { 'products.product.title': -1 };
+        //         break;
+        //     case "rating_low_to_high":
+        //         sortValue = { 'products.product.review_star': 1 };
+        //         break;
+        //     case "rating_high_to_low":
+        //         sortValue = { 'products.product.review_star': -1 };
+        //         break;
+        //     default:
+        //         break;
+        // }
 
         const userOrderDetails = await Order.aggregate([
             { $unwind: "$products" },
