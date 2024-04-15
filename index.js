@@ -74,6 +74,15 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on("sendUpdate", ({ receiverId, msg }) => {
+        console.log(receiverId, msg)
+        const clientDetails = getClient(receiverId)
+        console.log(clientDetails?.socketId)
+        if (clientDetails?.socketId) {
+            io.to(clientDetails?.socketId).emit("getUpdateNotify", msg)
+        }
+    })
+
     socket.on('disconnect', () => {
         removeClient(socket.id)
         console.log('Client disconnected');
