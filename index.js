@@ -14,7 +14,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: "*",
-        methods: ["GET", "POST"] 
+        methods: ["GET", "POST"]
     }
 });
 
@@ -68,21 +68,29 @@ io.on('connection', (socket) => {
     socket.on("sendNotify", ({ receiverId, msg }) => {
         console.log(receiverId, msg)
         const clientDetails = getClient(receiverId)
+        const adminDetails = getClient("65ea016382dbebbdd5193238")
         console.log(clientDetails?.socketId)
         if (clientDetails?.socketId) {
             io.to(clientDetails?.socketId).emit("getNotify", msg)
         }
-    })
-    socket.on("sendNotifyCheckout", ({ products,user }) => {
-        // console.log(products);
-        // console.log(user);
-        products.map((i)=>{
-        const clientDetails = getClient(i.product?.seller._id)
-       // console.log(clientDetails?.socketId)
-        if (clientDetails?.socketId) {
-            io.to(clientDetails?.socketId).emit("getNotifyCheckout", `${user} placed an order for ${i.product.title}`)
+        if (adminDetails?.socketId) {
+            io.to(adminDetails?.socketId).emit("getNotify", msg)
         }
     })
+    socket.on("sendNotifyCheckout", ({ products, user }) => {
+        // console.log(products);
+        // console.log(user);
+        products.map((i) => {
+            const clientDetails = getClient(i.product?.seller._id)
+            const adminDetails = getClient("65ea016382dbebbdd5193238")
+            // console.log(clientDetails?.socketId)
+            if (clientDetails?.socketId) {
+                io.to(clientDetails?.socketId).emit("getNotifyCheckout", `${user} placed an order for ${i.product.title}`)
+            }
+            if (adminDetails?.socketId) {
+                io.to(adminDetails?.socketId).emit("getNotifyCheckout", `${user} placed an order for ${i.product.title}`)
+            }
+        })
     })
 
     socket.on("sendUpdate", ({ receiverId, msg }) => {
