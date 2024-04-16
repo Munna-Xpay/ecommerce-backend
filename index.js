@@ -13,8 +13,8 @@ const app = express()
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", // Allow requests from any origin, replace with your actual frontend URL
-        methods: ["GET", "POST"] // Allow only GET and POST requests
+        origin: "*",
+        methods: ["GET", "POST"] 
     }
 });
 
@@ -72,6 +72,17 @@ io.on('connection', (socket) => {
         if (clientDetails?.socketId) {
             io.to(clientDetails?.socketId).emit("getNotify", msg)
         }
+    })
+    socket.on("sendNotifyCheckout", ({ products,user }) => {
+        // console.log(products);
+        // console.log(user);
+        products.map((i)=>{
+        const clientDetails = getClient(i.product?.seller._id)
+       // console.log(clientDetails?.socketId)
+        if (clientDetails?.socketId) {
+            io.to(clientDetails?.socketId).emit("getNotifyCheckout", `${user} placed an order for ${i.product.title}`)
+        }
+    })
     })
 
     socket.on("sendUpdate", ({ receiverId, msg }) => {
