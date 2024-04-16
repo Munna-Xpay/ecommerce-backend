@@ -20,16 +20,21 @@ const io = new Server(server, {
 
 app.use(express.json())
 app.use(cors())
+app.use((req,res,next)=>{
+    console.log(req.method)
+    console.log(req.url)
+    next()
+})
 app.use('/api/admin', adminRouter)
 app.use('/api/product', productsRouter)
 app.use('/api/auth', usersRouter)
 app.use('/api/seller', sellerRouter)
 app.use("/uploadedFiles", express.static("./uploadedFiles"))
 
-
+    
 const port = process.env.PORT || 4000;
 
-server.listen(port, () => {
+server.listen(port, () => {      
     console.log("server listening on port " + port)
     try {
         mongoose.connect(process.env.MONGO_URL)

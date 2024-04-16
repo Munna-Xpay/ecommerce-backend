@@ -21,6 +21,7 @@ const sellerLoginSchema = Joi.object({
 })
 
 export const validateSellerRequest = (req, res, next) => {
+    console.log(req.body)
     sellerSchema.validateAsync(req.body)
         .then(value => {
             next();
