@@ -230,7 +230,7 @@ export const getProductsByFilter = async (req, res) => {
       pipeline.push({ $sort: sortValue });
     }
     if (pipeline.length === 0) {
-      pipeline.push({ $match: {} });
+      pipeline.push({ $match: {} },{$sort:{createdAt:-1}});
     }
     const allProducts = await Product.aggregate(pipeline);
     res.status(200).json(allProducts);

@@ -6,7 +6,17 @@ import productsRouter from './routes/products.js';
 import usersRouter from './routes/users.js'
 import adminRouter from './routes/admin.js'
 import sellerRouter from './routes/seller.js'
+import http from 'http'
+import { Server } from 'socket.io';
+
 const app = express()
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
 app.use(express.json())
 app.use(cors())
@@ -18,13 +28,13 @@ app.use((req,res,next)=>{
 app.use('/api/admin', adminRouter)
 app.use('/api/product', productsRouter)
 app.use('/api/auth', usersRouter)
-app.use('/api/seller',sellerRouter)
+app.use('/api/seller', sellerRouter)
 app.use("/uploadedFiles", express.static("./uploadedFiles"))
 
     
 const port = process.env.PORT || 4000;
 
-app.listen(port, () => {         
+server.listen(port, () => {      
     console.log("server listening on port " + port)
     try {
         mongoose.connect(process.env.MONGO_URL)
@@ -34,3 +44,71 @@ app.listen(port, () => {
         console.log(err)
     }
 })
+
+
+let clients = [];
+
+const addClients = (clientId, socketId) => {
+    if (clients.every((client) => client.clientId !== clientId)) {
+        clients.push({ clientId, socketId })
+    }
+}
+const removeClient = (socketId) => {
+    clients = clients.filter((client) => client.socketId !== socketId)
+}
+
+const getClient = (receiverId) => {
+    return clients.find((client) => client.clientId == receiverId);
+}
+
+// WebSocket connection handling
+io.on('connection', (socket) => {
+    console.log('Client connected');
+    socket.on("sendClient", (clientId) => {
+        console.log(clientId)
+        addClients(clientId, socket.id)
+        console.log(clients)
+    })
+
+    socket.on("sendNotify", ({ receiverId, msg }) => {
+        console.log(receiverId, msg)
+        const clientDetails = getClient(receiverId)
+        const adminDetails = getClient("65ea016382dbebbdd5193238")
+        console.log(clientDetails?.socketId)
+        if (clientDetails?.socketId) {
+            io.to(clientDetails?.socketId).emit("getNotify", msg)
+        }
+        if (adminDetails?.socketId) {
+            io.to(adminDetails?.socketId).emit("getNotify", msg)
+        }
+    })
+    socket.on("sendNotifyCheckout", ({ products, user }) => {
+        // console.log(products);
+        // console.log(user);
+        products.map((i) => {
+            const clientDetails = getClient(i.product?.seller._id)
+            const adminDetails = getClient("65ea016382dbebbdd5193238")
+            // console.log(clientDetails?.socketId)
+            if (clientDetails?.socketId) {
+                io.to(clientDetails?.socketId).emit("getNotifyCheckout", `${user} placed an order for ${i.product.title}`)
+            }
+            if (adminDetails?.socketId) {
+                io.to(adminDetails?.socketId).emit("getNotifyCheckout", `${user} placed an order for ${i.product.title}`)
+            }
+        })
+    })
+
+    socket.on("sendUpdate", ({ receiverId, msg }) => {
+        console.log(receiverId, msg)
+        const clientDetails = getClient(receiverId)
+        console.log(clientDetails?.socketId)
+        if (clientDetails?.socketId) {
+            io.to(clientDetails?.socketId).emit("getUpdateNotify", msg)
+        }
+    })
+
+    socket.on('disconnect', () => {
+        removeClient(socket.id)
+        console.log('Client disconnected');
+    });
+});
