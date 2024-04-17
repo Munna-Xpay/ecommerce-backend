@@ -98,18 +98,12 @@ export const deleteOrder = async (req, res) => {
 export const cancelOrder = async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.payload);
     try {
-        const orderToBeDeleting = await Order.findById(req.params.id)
-        // console.log(orderToBeDeleting)
-        if (orderToBeDeleting.products.length > 1) {
-            orderToBeDeleting.products = orderToBeDeleting.products.filter((item) => item.product._id != req.body.productId)
-            // console.log(orderToBeDeleting)
-            await Order.findByIdAndUpdate(req.params.id, { $set: orderToBeDeleting })
-        } else {
-            // console.log(orderToBeDeleting)
-            await Order.findByIdAndDelete(req.params.id)
-        }
+        const updatedOrder = await Order.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+        console.log(updateOrder)
         await User.findByIdAndUpdate(req.payload, { $inc: { ordersCount: -1 } })
-        await Products.findByIdAndUpdate(req.body.productId, { $inc: { product_sold: - 1, stockQuantity: + 1 } })
+        updatedOrder.products.map(async (item) => {
+            await Products.findByIdAndUpdate(item._id, { $inc: { product_sold: - 1, stockQuantity: + 1 } })
+        })
         const AllOrdersWithUpdation = await Order.aggregate([
             {
                 $match: {
@@ -175,7 +169,8 @@ export const getOrdersAndIncomeOfThisYear = async (req, res) => {
                     createdAt: {
                         $gte: new Date(new Date().getFullYear(), 0, 1), // Start of the current year
                         $lt: new Date(new Date().getFullYear() + 1, 0, 1) // Start of next year
-                    }
+                    },
+                    orderStatus: { $not: { $in: ['Canceled', 'Refunded'] } }
                 }
             },
             {
@@ -214,7 +209,8 @@ export const getSalesActivity = async (req, res) => {
                     dateOrdered: {
                         $gte: new Date(new Date().getFullYear(), 0, 1), // Start of the current year
                         $lt: new Date(new Date().getFullYear() + 1, 0, 1) // Start of next year
-                    }
+                    },
+                    orderStatus: { $not: { $in: ['Canceled', 'Refunded'] } }
                 }
             },
             {
@@ -270,12 +266,14 @@ export const getPeriodSalesRevenue = async (req, res) => {
                     month: { $month: "$dateOrdered" },
                     products: 1,
                     dateOrdered: 1,
-                    totalPrice: 1
+                    totalPrice: 1,
+                    orderStatus: 1
                 }
             },
             {
                 $match: {
-                    month: new Date().getMonth() + 1
+                    month: new Date().getMonth() + 1,
+                    orderStatus: { $not: { $in: ['Canceled', 'Refunded'] } }
                 }
             },
             {

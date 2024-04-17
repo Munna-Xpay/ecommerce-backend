@@ -20,7 +20,7 @@ const io = new Server(server, {
 
 app.use(express.json())
 app.use(cors())
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
     console.log(req.method)
     console.log(req.url)
     next()
@@ -31,10 +31,10 @@ app.use('/api/auth', usersRouter)
 app.use('/api/seller', sellerRouter)
 app.use("/uploadedFiles", express.static("./uploadedFiles"))
 
-    
+
 const port = process.env.PORT || 4000;
 
-server.listen(port, () => {      
+server.listen(port, () => {
     console.log("server listening on port " + port)
     try {
         mongoose.connect(process.env.MONGO_URL)
@@ -66,22 +66,24 @@ io.on('connection', (socket) => {
     console.log('Client connected');
     socket.on("sendClient", (clientId) => {
         console.log(clientId)
-        addClients(clientId, socket.id)
+        if (clientId) {
+            addClients(clientId, socket.id)
+        }
         console.log(clients)
     })
 
-    socket.on("sendNotify", ({ receiverId, msg }) => {
-        console.log(receiverId, msg)
-        const clientDetails = getClient(receiverId)
-        const adminDetails = getClient("65ea016382dbebbdd5193238")
-        console.log(clientDetails?.socketId)
-        if (clientDetails?.socketId) {
-            io.to(clientDetails?.socketId).emit("getNotify", msg)
-        }
-        if (adminDetails?.socketId) {
-            io.to(adminDetails?.socketId).emit("getNotify", msg)
-        }
-    })
+    // socket.on("sendNotify", ({ receiverId, msg }) => {
+    //     console.log(receiverId, msg)
+    //     const clientDetails = getClient(receiverId)
+    //     const adminDetails = getClient("65ea016382dbebbdd5193238")
+    //     console.log(clientDetails?.socketId)
+    //     if (clientDetails?.socketId) {
+    //         io.to(clientDetails?.socketId).emit("getNotify", msg)
+    //     }
+    //     if (adminDetails?.socketId) {
+    //         io.to(adminDetails?.socketId).emit("getNotify", msg)
+    //     }
+    // })
     socket.on("sendNotifyCheckout", ({ products, user }) => {
         // console.log(products);
         // console.log(user);
@@ -104,6 +106,19 @@ io.on('connection', (socket) => {
         console.log(clientDetails?.socketId)
         if (clientDetails?.socketId) {
             io.to(clientDetails?.socketId).emit("getUpdateNotify", msg)
+        }
+    })
+
+    socket.on("sendCancelOrder", ({ receiverId, msg }) => {
+        console.log(receiverId, msg)
+        const clientDetails = getClient(receiverId)
+        const adminDetails = getClient("65ea016382dbebbdd5193238")
+        console.log(clientDetails?.socketId)
+        if (clientDetails?.socketId) {
+            io.to(clientDetails?.socketId).emit("getCancelOrder", msg)
+        }
+        if (adminDetails?.socketId) {
+            io.to(adminDetails?.socketId).emit("getCancelOrder", msg)
         }
     })
 
