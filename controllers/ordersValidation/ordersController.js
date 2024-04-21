@@ -2,6 +2,7 @@ import Order from "../../models/ordersModel.js";
 import Products from "../../models/productsModel.js";
 import User from "../../models/userModel.js";
 import mongoose from "mongoose";
+import Razorpay from 'razorpay';
 
 
 //checkout details
@@ -99,10 +100,10 @@ export const cancelOrder = async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.payload);
     try {
         const updatedOrder = await Order.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
-        console.log(updateOrder)
+        console.log(updatedOrder)
         await User.findByIdAndUpdate(req.payload, { $inc: { ordersCount: -1 } })
         updatedOrder.products.map(async (item) => {
-            await Products.findByIdAndUpdate(item._id, { $inc: { product_sold: - 1, stockQuantity: + 1 } })
+            await Products.findByIdAndUpdate(item.product._id, { $inc: { product_sold: - 1, stockQuantity: + 1 } })
         })
         const AllOrdersWithUpdation = await Order.aggregate([
             {
@@ -436,6 +437,42 @@ export const getOrderByCategoryBySeller = async (req, res) => {
         res.status(200).json(userOrderDetails);
     } catch (err) {
         res.status(401).json({ error: err, message: 'Orders access failed' });
+    }
+};
+
+// razorpay create order
+export const razorpayCreateOrder = async (req, res) => {
+
+    try {
+        const razorpayInstance = new Razorpay({
+            key_id: process.env.KEY_ID,
+            key_secret: process.env.KEY_SECRET
+        });
+
+        const order = await razorpayInstance.orders.create({
+            amount: req.body.amount,
+            currency: 'INR', // Change currency if needed
+            payment_capture: 1,
+        });
+        res.json(order);
+
+    } catch (err) {
+        res.status(401).json({ error: err, message: 'payment failed' });
+    }
+};
+
+// razorpay payment cupture
+export const razorpayPaymentCapture = async (req, res) => {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+    const body = razorpay_order_id + '|' + razorpay_payment_id;
+    const expectedSignature = razorpayInstance.utils.generateHmac(body, process.env.KEY_SECRET);
+
+    if (expectedSignature === razorpay_signature) {
+        // Payment successful, update database or perform necessary actions
+        res.json({ status: 'success', message: 'Payment successful' });
+    } else {
+        // Payment failed
+        res.status(400).json({ status: 'error', message: 'Invalid signature' });
     }
 };
 

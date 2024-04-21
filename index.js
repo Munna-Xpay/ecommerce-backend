@@ -72,18 +72,6 @@ io.on('connection', (socket) => {
         console.log(clients)
     })
 
-    // socket.on("sendNotify", ({ receiverId, msg }) => {
-    //     console.log(receiverId, msg)
-    //     const clientDetails = getClient(receiverId)
-    //     const adminDetails = getClient("65ea016382dbebbdd5193238")
-    //     console.log(clientDetails?.socketId)
-    //     if (clientDetails?.socketId) {
-    //         io.to(clientDetails?.socketId).emit("getNotify", msg)
-    //     }
-    //     if (adminDetails?.socketId) {
-    //         io.to(adminDetails?.socketId).emit("getNotify", msg)
-    //     }
-    // })
     socket.on("sendNotifyCheckout", ({ products, user }) => {
         // console.log(products);
         // console.log(user);

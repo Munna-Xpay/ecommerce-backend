@@ -42,6 +42,10 @@ const orderSchema = new mongoose.Schema({
     dateOrdered: {
         type: Date,
         default: Date.now,
+    },
+    canceledReason: {
+        type: String,
+        default: "",
     }
 }, { timestamps: true })
 
