@@ -6,7 +6,7 @@ import { addToCart, cartProducts, changeCartQuantity, decrementCartQty, deleteCa
 import { addToWishlist, deleteWishlistProduct, getWishlistProducts } from '../controllers/wishlistController/wishlistController.js';
 import { validateCartRequest } from '../controllers/cartControllers/validation/cartValidation.js';
 import { validateWishlistRequest } from '../controllers/wishlistController/validation/wishlistValidation.js';
-import { allOrders, cancelOrder, deleteOrder, getOrderByCategory, getOrderByCategoryBySeller, orderDetails, updateOrder, userOrder } from '../controllers/ordersValidation/ordersController.js';
+import { allOrders, cancelOrder, deleteOrder, getOrderByCategory, getOrderByCategoryBySeller, orderDetails, razorpayCreateOrder, razorpayPaymentCapture, updateOrder, userOrder } from '../controllers/ordersValidation/ordersController.js';
 import { validateOrderRequest } from '../controllers/ordersValidation/validation/ordersValidation.js';
 import { validateUserLoginRequest } from '../controllers/usersController/validation/userLoginValidation.js';
 import { validateUserRegisterRequest } from '../controllers/usersController/validation/usersValidation.js'
@@ -80,6 +80,12 @@ router.delete('/delete-wishlist-product/:_id', jwtMiddleware, deleteWishlistProd
 
 //order details
 router.post('/add-order-details', jwtMiddleware, validateOrderRequest, orderDetails)
+
+// API route to create an order
+router.post('/create-order', jwtMiddleware, razorpayCreateOrder)
+
+// API route to capture-payment
+router.post('/capture-payment', jwtMiddleware, razorpayPaymentCapture)
 
 //user orders
 router.get('/user-orders', jwtMiddleware, userOrder)
