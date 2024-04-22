@@ -3,7 +3,8 @@ import Products from "../../models/productsModel.js";
 import User from "../../models/userModel.js";
 import mongoose from "mongoose";
 import Razorpay from 'razorpay';
-
+import crypto from 'crypto'
+import { log } from "console";
 
 //checkout details
 export const orderDetails = async (req, res) => {
@@ -461,19 +462,31 @@ export const razorpayCreateOrder = async (req, res) => {
     }
 };
 
+
 // razorpay payment cupture
 export const razorpayPaymentCapture = async (req, res) => {
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+    console.log(razorpay_signature);
     const body = razorpay_order_id + '|' + razorpay_payment_id;
-    const expectedSignature = razorpayInstance.utils.generateHmac(body, process.env.KEY_SECRET);
 
-    if (expectedSignature === razorpay_signature) {
-        // Payment successful, update database or perform necessary actions
-        res.json({ status: 'success', message: 'Payment successful' });
-    } else {
-        // Payment failed
-        res.status(400).json({ status: 'error', message: 'Invalid signature' });
+    try {
+        // Generate expected signature using the secret key
+        const expectedSignature = crypto.createHmac('sha256', process.env.KEY_SECRET)
+            .update(body)
+            .digest('hex');
+
+        // Verify the signature
+        if (expectedSignature === razorpay_signature) {
+            // Payment successful, update database or perform necessary actions
+            res.json({ status: 'success', message: 'Payment successful' });
+        } else {
+            res.status(400).json({ status: 'error', message: 'Invalid signature' });
+        }
+    } catch (error) {
+        console.error('Error capturing payment:', error);
+        res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 };
+
 
 
